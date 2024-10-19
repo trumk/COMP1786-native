@@ -35,7 +35,7 @@ public interface ApiService {
     @GET("admin/courses")
     Call<List<YogaCourse>> getAllCourses();
 
-    @GET("admin/courses/{id}")
+    @GET("admin/courses/not/{id}")
     Call<YogaCourse> getCourseById(@Path("id") String id);
 
     @POST("admin/courses")

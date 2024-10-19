@@ -4,49 +4,57 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="8dp"
-    android:padding="16dp">
+    android:elevation="4dp"
+    app:cardCornerRadius="12dp"
+    android:background="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/tvTypeName"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Class Name"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:paddingBottom="4dp"/>
+            android:layout_marginBottom="8dp"/>
 
         <TextView
             android:id="@+id/tvClassDescription"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Class Description"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
-            android:paddingBottom="8dp"/>
+            android:layout_marginBottom="8dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="end">
 
             <Button
                 android:id="@+id/btnEditClass"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Edit"
+                android:textColor="@android:color/black"
+                android:backgroundTint="@android:color/darker_gray"
                 android:layout_marginEnd="8dp"/>
 
             <Button
                 android:id="@+id/btnDeleteClass"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delete"/>
+                android:text="Delete"
+                android:textColor="@android:color/black"
+                android:backgroundTint="@android:color/darker_gray"/>
         </LinearLayout>
     </LinearLayout>
 

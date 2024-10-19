@@ -15,7 +15,6 @@
         android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
 
-        <!-- AdminHomeActivity sẽ là Activity khởi động chính -->
         <activity
             android:name=".AdminHomeActivity"
             android:exported="true"
@@ -26,7 +25,6 @@
             </intent-filter>
         </activity>
 
-        <!-- ClassListActivity vẫn được khai báo nhưng không là Activity chính -->
         <activity
             android:name=".ClassListActivity"
             android:exported="true"
@@ -52,6 +50,10 @@
         <activity
             android:name=".CourseFormActivity"
             android:exported="true" />
+        <activity
+            android:name=".UserListActivity"
+            android:exported="true" />
+
     </application>
 
 </manifest>

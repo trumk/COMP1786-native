@@ -12,6 +12,8 @@ import com.example.yogadminapp.api.ApiService;
 import com.example.yogadminapp.api.RetrofitClient;
 import com.example.yogadminapp.models.ClassType;
 import com.example.yogadminapp.models.YogaCourse;
+import com.google.gson.Gson;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,6 +35,7 @@ public class CourseFormActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_form);
 
+        // Khởi tạo các thành phần giao diện
         etDayOfWeek = findViewById(R.id.etDayOfWeek);
         timePickerCourseTime = findViewById(R.id.timePickerCourseTime);
         etCapacity = findViewById(R.id.etCapacity);
@@ -47,25 +50,24 @@ public class CourseFormActivity extends AppCompatActivity {
 
         timePickerCourseTime.setIs24HourView(true);
 
-        loadClassTypes();
-
         ArrayAdapter<CharSequence> durationAdapter = ArrayAdapter.createFromResource(this,
                 R.array.duration_array, android.R.layout.simple_spinner_item);
         durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDuration.setAdapter(durationAdapter);
 
         courseId = getIntent().getStringExtra("courseId");
-        if (courseId != null) {
-            loadCourseDetails(courseId);
-        }
+        Log.d("CourseFormActivity", "Received courseId: " + courseId);
 
-        // Chọn ngày của tuần
+        loadClassTypes(() -> {
+            if (courseId != null) {
+                loadCourseDetails(courseId);
+            }
+        });
+
         etDayOfWeek.setOnClickListener(v -> selectDayOfWeek());
 
-        // Sự kiện nút quay lại
         btnBackToList.setOnClickListener(v -> finish());
 
-        // Sự kiện nút lưu
         btnSave.setOnClickListener(v -> {
             if (courseId != null) {
                 updateCourse();
@@ -74,6 +76,7 @@ public class CourseFormActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void loadCourseDetails(String courseId) {
         ApiService apiService = RetrofitClient.getApiService();
@@ -89,16 +92,36 @@ public class CourseFormActivity extends AppCompatActivity {
                     etTeacherName.setText(course.getTeacherName());
                     etLocation.setText(course.getLocation());
                     etDescription.setText(course.getDescription());
-                    timePickerCourseTime.setHour(selectedDate.get(Calendar.HOUR_OF_DAY));
-                    timePickerCourseTime.setMinute(selectedDate.get(Calendar.MINUTE));
+
+                    try {
+                        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                        SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+                        Date date = inputFormat.parse(course.getCourseTime());
+                        if (date != null) {
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(date);
+                            timePickerCourseTime.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+                            timePickerCourseTime.setMinute(calendar.get(Calendar.MINUTE));
+                            String formattedDate = outputFormat.format(date);
+                            Log.d("CourseFormActivity", "Set time: " + formattedDate);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     for (int i = 0; i < classTypesList.size(); i++) {
                         if (classTypesList.get(i).getId().equals(course.getClassType().getId())) {
                             spinnerClassType.setSelection(i);
+                            Log.d("CourseFormActivity", "Set classType: " + course.getClassType().getTypeName());
                             break;
                         }
                     }
                 } else {
-                    Log.e("CourseFormActivity", "Failed to load course details");
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        Log.e("CourseFormActivity", "Failed to load course details: " + response.message() + ", Error body: " + errorBody);
+                    } catch (Exception e) {
+                        Log.e("CourseFormActivity", "Failed to load course details: " + response.message());
+                    }
                 }
             }
 
@@ -127,6 +150,9 @@ public class CourseFormActivity extends AppCompatActivity {
             public void onResponse(Call<YogaCourse> call, Response<YogaCourse> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(CourseFormActivity.this, "Course updated successfully", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(CourseFormActivity.this, CourseListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                     finish();
                 } else {
                     Log.e("CourseFormActivity", "Failed to update course: " + response.message());
@@ -142,7 +168,8 @@ public class CourseFormActivity extends AppCompatActivity {
         });
     }
 
-    private void loadClassTypes() {
+
+    private void loadClassTypes(Runnable onComplete) {
         ApiService apiService = RetrofitClient.getApiService();
         apiService.getAllClassTypes().enqueue(new Callback<List<ClassType>>() {
             @Override
@@ -153,6 +180,11 @@ public class CourseFormActivity extends AppCompatActivity {
                             android.R.layout.simple_spinner_item, classTypesList);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerClassType.setAdapter(adapter);
+
+                    // Gọi callback khi tải xong classTypesList
+                    if (onComplete != null) {
+                        onComplete.run();
+                    }
                 } else {
                     Log.e("CourseFormActivity", "Failed to load class types");
                 }
@@ -164,7 +196,6 @@ public class CourseFormActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void selectDayOfWeek() {
         String[] daysOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -192,9 +223,17 @@ public class CourseFormActivity extends AppCompatActivity {
             public void onResponse(Call<YogaCourse> call, Response<YogaCourse> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(CourseFormActivity.this, "Course added successfully", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(CourseFormActivity.this, CourseListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                     finish();
                 } else {
-                    Log.e("CourseFormActivity", "Failed to add course: " + response.message());
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        Log.e("CourseFormActivity", "Failed to add course: " + response.message() + ", Error body: " + errorBody);
+                    } catch (Exception e) {
+                        Log.e("CourseFormActivity", "Failed to add course: " + response.message());
+                    }
                     Toast.makeText(CourseFormActivity.this, "Failed to add course", Toast.LENGTH_SHORT).show();
                 }
             }

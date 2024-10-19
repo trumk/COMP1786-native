@@ -28,21 +28,18 @@ public class ClassFormActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btnSave);
         btnBackToList = findViewById(R.id.btnBackToList);
 
-        // Kiểm tra xem có truyền id của lớp học qua Intent không
         if (getIntent().hasExtra("classTypeId")) {
             classId = getIntent().getStringExtra("classTypeId");
-            loadClassDetails(classId); // Nếu có, tải chi tiết lớp học
+            loadClassDetails(classId);
         }
 
-        // Xử lý sự kiện nút quay lại danh sách
         btnBackToList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish(); // Trở về danh sách các lớp
+                finish();
             }
         });
 
-        // Xử lý sự kiện nút lưu lớp yoga mới hoặc chỉnh sửa
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,7 +58,6 @@ public class ClassFormActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ClassType> call, Response<ClassType> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Hiển thị thông tin lớp học trên form
                     etClassName.setText(response.body().getTypeName());
                 } else {
                     Toast.makeText(ClassFormActivity.this, "Failed to load class details", Toast.LENGTH_SHORT).show();

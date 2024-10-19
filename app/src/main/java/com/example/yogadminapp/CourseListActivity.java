@@ -69,7 +69,7 @@ public class CourseListActivity extends AppCompatActivity {
                             Log.d("CourseListActivity", "Course: " + course.toString());
                         }
                     }
-                    adapter = new CourseAdapter(courses);
+                    adapter = new CourseAdapter(courses, CourseListActivity.this);
                     recyclerView.setAdapter(adapter);
                 } else {
                     Log.e("CourseListActivity", "Failed to load courses: " + response.message());
@@ -82,7 +82,14 @@ public class CourseListActivity extends AppCompatActivity {
                 Log.e("CourseListActivity", "Error: " + t.getMessage());
                 Toast.makeText(CourseListActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
+
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadCourses();
+    }
+
 
 }

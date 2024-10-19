@@ -16,6 +16,7 @@ import com.example.yogadminapp.api.RetrofitClient;
 import com.example.yogadminapp.models.ClassType;
 import com.example.yogadminapp.models.User;
 import com.example.yogadminapp.models.YogaCourse;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class AdminHomeActivity extends AppCompatActivity {
     private TextView tvUserCount;
     private TextView tvClassCount;
     private TextView tvCourseCount;
+    private MaterialCardView cardUsers; // Khai báo cardUsers
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,19 @@ public class AdminHomeActivity extends AppCompatActivity {
         tvUserCount = findViewById(R.id.tvUserCount);
         tvClassCount = findViewById(R.id.tvClassCount);
         tvCourseCount = findViewById(R.id.tvCourseCount);
+        cardUsers = findViewById(R.id.cardUsers); // Khởi tạo cardUsers
+
+        if (cardUsers != null) {
+            cardUsers.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(AdminHomeActivity.this, UserListActivity.class);
+                    startActivity(intent);
+                }
+            });
+        } else {
+            Log.e("AdminHomeActivity", "cardUsers is null");
+        }
 
         btnManageCourses.setOnClickListener(new View.OnClickListener() {
             @Override
