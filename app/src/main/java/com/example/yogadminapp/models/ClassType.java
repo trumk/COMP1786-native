@@ -2,7 +2,9 @@ package com.example.yogadminapp.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ClassType {
+import java.io.Serializable;
+
+public class ClassType implements Serializable {
     @SerializedName("_id")
     private String id;
 

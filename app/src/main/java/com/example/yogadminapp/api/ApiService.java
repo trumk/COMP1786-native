@@ -1,6 +1,7 @@
 package com.example.yogadminapp.api;
 
 import com.example.yogadminapp.models.ClassType;
+import com.example.yogadminapp.models.Order;
 import com.example.yogadminapp.models.User;
 import com.example.yogadminapp.models.YogaCourse;
 
@@ -12,7 +13,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
-import retrofit2.http.Query; // Import Query ở đây
+import retrofit2.http.Query;
 
 public interface ApiService {
     @GET("class")
@@ -51,6 +52,6 @@ public interface ApiService {
     @DELETE("admin/courses/{id}")
     Call<Void> deleteCourse(@Path("id") String id);
 
-    @POST("class/ids")
-    Call<List<ClassType>> getClassTypesByIds(@Body List<String> ids);
+    @GET("order")
+    Call<List<Order>> getOrders();
 }

@@ -47,11 +47,21 @@
             android:name=".CourseListActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+
         <activity
             android:name=".CourseFormActivity"
             android:exported="true" />
+
         <activity
             android:name=".UserListActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".OrderListActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".OrderDetailActivity"
             android:exported="true" />
 
     </application>

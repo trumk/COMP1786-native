@@ -164,4 +164,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnManageCourses"
         app:layout_constraintHorizontal_bias="0.5"/>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnManageOrders"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Manage Orders"
+        app:cornerRadius="12dp"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:backgroundTint="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnManageClasses"
+        app:layout_constraintHorizontal_bias="0.5"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

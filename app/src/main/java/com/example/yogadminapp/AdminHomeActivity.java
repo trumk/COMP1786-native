@@ -28,6 +28,7 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     private Button btnManageCourses;
     private Button btnManageClasses;
+    private Button btnManageOrders;
     private TextView tvUserCount;
     private TextView tvClassCount;
     private TextView tvCourseCount;
@@ -40,10 +41,11 @@ public class AdminHomeActivity extends AppCompatActivity {
 
         btnManageCourses = findViewById(R.id.btnManageCourses);
         btnManageClasses = findViewById(R.id.btnManageClasses);
+        btnManageOrders = findViewById(R.id.btnManageOrders);
         tvUserCount = findViewById(R.id.tvUserCount);
         tvClassCount = findViewById(R.id.tvClassCount);
         tvCourseCount = findViewById(R.id.tvCourseCount);
-        cardUsers = findViewById(R.id.cardUsers); // Khởi tạo cardUsers
+        cardUsers = findViewById(R.id.cardUsers);
 
         if (cardUsers != null) {
             cardUsers.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +73,11 @@ public class AdminHomeActivity extends AppCompatActivity {
                 Intent intent = new Intent(AdminHomeActivity.this, ClassListActivity.class);
                 startActivity(intent);
             }
+        });
+
+        btnManageOrders.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminHomeActivity.this, OrderListActivity.class);
+            startActivity(intent);
         });
 
         loadUserCount();
