@@ -12,6 +12,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query; // Import Query ở đây
 
 public interface ApiService {
     @GET("class")
@@ -32,6 +33,9 @@ public interface ApiService {
     @GET("auth/allUser")
     Call<List<User>> getAllUsers();
 
+    @GET("admin/courses/search")
+    Call<List<YogaCourse>> searchCourses(@Query("teacherName") String teacherName, @Query("dayOfWeek") String dayOfWeek);
+
     @GET("admin/courses")
     Call<List<YogaCourse>> getAllCourses();
 
@@ -46,4 +50,7 @@ public interface ApiService {
 
     @DELETE("admin/courses/{id}")
     Call<Void> deleteCourse(@Path("id") String id);
+
+    @POST("class/ids")
+    Call<List<ClassType>> getClassTypesByIds(@Body List<String> ids);
 }

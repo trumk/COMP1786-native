@@ -15,7 +15,7 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/tvCourseName"
+            android:id="@+id/tvNo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Course Name"
@@ -25,10 +25,10 @@
             android:layout_marginBottom="8dp"/>
 
         <TextView
-            android:id="@+id/tvTeacherName"
+            android:id="@+id/tvLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Teacher: Selena"
+            android:text="Location: Ha Noi"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
             android:layout_marginBottom="4dp"/>
@@ -37,16 +37,16 @@
             android:id="@+id/tvCourseTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date: 17/10/2024 23:45"
+            android:text="Day: Monday"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
             android:layout_marginBottom="4dp"/>
 
         <TextView
-            android:id="@+id/tvLocation"
+            android:id="@+id/tvCapacity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Location: Ha Noi"
+            android:text="Capacity: 20"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
             android:layout_marginBottom="8dp"/>

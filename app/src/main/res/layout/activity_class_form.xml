@@ -12,7 +12,50 @@
         android:hint="Enter Class Name"
         android:inputType="text"
         android:minHeight="48dp"
-        android:padding="12dp" />
+        android:padding="12dp"
+        android:layout_marginTop="8dp"/>
+
+    <EditText
+        android:id="@+id/etDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Description"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"/>
+
+    <EditText
+        android:id="@+id/etTeacher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Teacher Name"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"/>
+
+    <EditText
+        android:id="@+id/etDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Select Date and Time"
+        android:focusable="false"
+        android:clickable="true"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Thêm trường EditText cho Duration -->
+    <EditText
+        android:id="@+id/etDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Duration (minutes)"
+        android:inputType="number"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"/>
 
     <Button
         android:id="@+id/btnSave"

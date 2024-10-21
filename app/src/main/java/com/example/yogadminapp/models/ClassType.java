@@ -9,22 +9,36 @@ public class ClassType {
     @SerializedName("typeName")
     private String typeName;
 
+    @SerializedName("description")
+    private String description;
+
+    @SerializedName("teacher")
+    private String teacher;
+
+    @SerializedName("date")
+    private String date;
+
+    @SerializedName("duration")
+    private int duration; // Thêm trường duration
+
     @SerializedName("__v")
-    private int version; // Thêm trường để ánh xạ __v
+    private int version;
 
     public ClassType() {}
 
-    // Constructor hai tham số (id và typeName)
+    public ClassType(String id, String typeName, String description, String teacher, String date, int duration, int version) {
+        this.id = id;
+        this.typeName = typeName;
+        this.description = description;
+        this.teacher = teacher;
+        this.date = date;
+        this.duration = duration;
+        this.version = version;
+    }
+
     public ClassType(String id, String typeName) {
         this.id = id;
         this.typeName = typeName;
-    }
-
-    // Constructor ba tham số (id, typeName, version)
-    public ClassType(String id, String typeName, int version) {
-        this.id = id;
-        this.typeName = typeName;
-        this.version = version;
     }
 
     public String getId() {
@@ -43,6 +57,38 @@ public class ClassType {
         this.typeName = typeName;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(String teacher) {
+        this.teacher = teacher;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
     public int getVersion() {
         return version;
     }
@@ -53,6 +99,11 @@ public class ClassType {
 
     @Override
     public String toString() {
-        return typeName; // Hiển thị typeName trong Spinner
+        return "Class Type: " + typeName + "\n" +
+                "Description: " + description + "\n" +
+                "Teacher: " + teacher + "\n" +
+                "Date: " + date + "\n" +
+                "Duration: " + duration + " minutes";
     }
+
 }

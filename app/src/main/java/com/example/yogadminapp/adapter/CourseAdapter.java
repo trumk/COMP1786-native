@@ -14,12 +14,9 @@ import com.example.yogadminapp.CourseFormActivity;
 import com.example.yogadminapp.R;
 import com.example.yogadminapp.api.ApiService;
 import com.example.yogadminapp.api.RetrofitClient;
+import com.example.yogadminapp.models.ClassType;
 import com.example.yogadminapp.models.YogaCourse;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,16 +41,23 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     @Override
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
         YogaCourse course = courses.get(position);
-        holder.tvCourseName.setText(course.getClassType().getTypeName());
-        holder.tvTeacherName.setText(course.getTeacherName());
 
-        String formattedDate = formatDateString(course.getCourseTime());
-        holder.tvCourseTime.setText("Date: " + formattedDate);
+        // Hiển thị thông tin tên khóa học với số thứ tự
+        holder.tvNo.setText("Course " + (position + 1)); // position bắt đầu từ 0, cộng thêm 1 để bắt đầu từ 1
+
+        // Hiển thị thông tin địa điểm
+        holder.tvLocation.setText("Location: " + course.getLocation());
+
+        // Hiển thị thông tin ngày
+        holder.tvCourseTime.setText("Day: " + course.getDayOfWeek());
+
+        // Hiển thị thông tin capacity
+        holder.tvCapacity.setText("Capacity: " + course.getCapacity());
 
         // Xử lý sự kiện khi nhấn nút Edit
         holder.btnEdit.setOnClickListener(v -> {
             Intent intent = new Intent(context, CourseFormActivity.class);
-            intent.putExtra("courseId", course.getId()); // Truyền ID của khóa học để chỉnh sửa
+            intent.putExtra("courseId", course.getId());
             context.startActivity(intent);
         });
 
@@ -68,39 +72,27 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         });
     }
 
+
     @Override
     public int getItemCount() {
         return courses.size();
     }
 
     public class CourseViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCourseName, tvTeacherName, tvCourseTime;
+        TextView tvNo, tvLocation, tvCourseTime, tvCapacity;
         Button btnEdit, btnDelete;
 
         public CourseViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvCourseName = itemView.findViewById(R.id.tvCourseName);
-            tvTeacherName = itemView.findViewById(R.id.tvTeacherName);
+            tvNo = itemView.findViewById(R.id.tvNo); // Đổi từ tvCourseName sang tvTeacher
+            tvLocation = itemView.findViewById(R.id.tvLocation);
             tvCourseTime = itemView.findViewById(R.id.tvCourseTime);
+            tvCapacity = itemView.findViewById(R.id.tvCapacity);
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 
-    private String formatDateString(String dateString) {
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-
-        try {
-            Date date = inputFormat.parse(dateString);
-            if (date != null) {
-                return outputFormat.format(date);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return dateString;
-    }
 
 
     private void deleteCourse(String courseId, int position) {

@@ -11,26 +11,14 @@ public class YogaCourse {
     @SerializedName("dayOfWeek")
     private String dayOfWeek;
 
-    @SerializedName("courseTime")
-    private String courseTime;
-
     @SerializedName("capacity")
     private int capacity;
-
-    @SerializedName("duration")
-    private int duration;
 
     @SerializedName("pricePerClass")
     private double pricePerClass;
 
     @SerializedName("classType")
-    private ClassType classType;
-
-    @SerializedName("description")
-    private String description;
-
-    @SerializedName("teacherName")
-    private String teacherName;
+    private List<ClassType> classTypes; // Danh sách các đối tượng ClassType
 
     @SerializedName("location")
     private String location;
@@ -38,23 +26,22 @@ public class YogaCourse {
     @SerializedName("participants")
     private List<String> participants;
 
+    // Constructor mặc định
     public YogaCourse() {
     }
 
-    public YogaCourse(String id, String dayOfWeek, String courseTime, int capacity, int duration, double pricePerClass, ClassType classType, String description, String teacherName, String location, List<String> participants) {
+    // Constructor với các tham số
+    public YogaCourse(String id, String dayOfWeek, int capacity, double pricePerClass, List<ClassType> classTypes, String location, List<String> participants) {
         this.id = id;
         this.dayOfWeek = dayOfWeek;
-        this.courseTime = courseTime;
         this.capacity = capacity;
-        this.duration = duration;
         this.pricePerClass = pricePerClass;
-        this.classType = classType;
-        this.description = description;
-        this.teacherName = teacherName;
+        this.classTypes = classTypes;
         this.location = location;
         this.participants = participants;
     }
 
+    // Getter và Setter cho các trường
     public String getId() {
         return id;
     }
@@ -71,28 +58,12 @@ public class YogaCourse {
         this.dayOfWeek = dayOfWeek;
     }
 
-    public String getCourseTime() {
-        return courseTime;
-    }
-
-    public void setCourseTime(String courseTime) {
-        this.courseTime = courseTime;
-    }
-
     public int getCapacity() {
         return capacity;
     }
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
     }
 
     public double getPricePerClass() {
@@ -103,28 +74,12 @@ public class YogaCourse {
         this.pricePerClass = pricePerClass;
     }
 
-    public ClassType getClassType() {
-        return classType;
+    public List<ClassType> getClassTypes() {
+        return classTypes;
     }
 
-    public void setClassType(ClassType classType) {
-        this.classType = classType;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getTeacherName() {
-        return teacherName;
-    }
-
-    public void setTeacherName(String teacherName) {
-        this.teacherName = teacherName;
+    public void setClassTypes(List<ClassType> classTypes) {
+        this.classTypes = classTypes;
     }
 
     public String getLocation() {
