@@ -8,11 +8,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.yogadminapp.adapters.OrderAdapter;
+import com.example.yogadminapp.adapter.OrderAdapter;
 import com.example.yogadminapp.api.ApiService;
 import com.example.yogadminapp.api.RetrofitClient;
 import com.example.yogadminapp.models.Order;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,9 +35,7 @@ public class OrderListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewOrders);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        btnBackToHome.setOnClickListener(v -> {
-            finish();
-        });
+        btnBackToHome.setOnClickListener(v -> finish());
 
         loadOrders();
     }
@@ -69,11 +70,15 @@ public class OrderListActivity extends AppCompatActivity {
             }
         });
     }
+
+    public String formatDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d/MM/yyyy HH:mm", Locale.getDefault());
+        return dateFormat.format(date);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         loadOrders();
     }
-
-
 }

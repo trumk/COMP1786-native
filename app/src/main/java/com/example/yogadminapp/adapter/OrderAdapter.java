@@ -1,4 +1,4 @@
-package com.example.yogadminapp.adapters;
+package com.example.yogadminapp.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,18 +10,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.yogadminapp.R;
 import com.example.yogadminapp.models.Order;
-
+import com.example.yogadminapp.OrderListActivity;
 import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
     private Context context;
     private List<Order> orders;
     private OnItemClickListener listener;
+    private OrderListActivity orderListActivity;
 
     public OrderAdapter(Context context, List<Order> orders, OnItemClickListener listener) {
         this.context = context;
         this.orders = orders;
         this.listener = listener;
+        this.orderListActivity = (OrderListActivity) context;
     }
 
     @NonNull
@@ -34,7 +36,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order order = orders.get(position);
-        holder.bind(order, listener);
+        holder.bind(order, listener, orderListActivity);
     }
 
     @Override
@@ -54,13 +56,14 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             btnViewDetail = itemView.findViewById(R.id.btnViewDetail);
         }
 
-        public void bind(Order order, OnItemClickListener listener) {
+        public void bind(Order order, OnItemClickListener listener, OrderListActivity orderListActivity) {
             tvStatus.setText(order.getStatus());
-            tvTotalAmount.setText(String.valueOf(order.getTotalAmount()));
-            tvCreatedAt.setText(order.getCreatedAt().toString());
-            btnViewDetail.setOnClickListener(v -> listener.onItemClick(order)); // Xử lý sự kiện khi bấm vào View Detail
+            tvTotalAmount.setText(String.format("$%.2f", order.getTotalAmount()));
 
+            String formattedDate = orderListActivity.formatDate(order.getCreatedAt());
+            tvCreatedAt.setText(formattedDate);
 
+            btnViewDetail.setOnClickListener(v -> listener.onItemClick(order));
             itemView.setOnClickListener(v -> listener.onItemClick(order));
         }
     }

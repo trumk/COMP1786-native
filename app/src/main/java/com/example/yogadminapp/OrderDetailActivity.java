@@ -10,6 +10,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,7 +38,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_order_detail);
 
         tvOrderId = findViewById(R.id.tvOrderId);
-        tvUserId = findViewById(R.id.tvUserId); // Khai báo TextView cho userId
+        tvUserId = findViewById(R.id.tvUserId);
         spinnerStatus = findViewById(R.id.spinnerStatus);
         tvTotalAmount = findViewById(R.id.tvTotalAmount);
         tvCreatedAt = findViewById(R.id.tvCreatedAt);
@@ -48,10 +51,12 @@ public class OrderDetailActivity extends AppCompatActivity {
             currentOrder = (Order) getIntent().getSerializableExtra("order");
             if (currentOrder != null) {
                 Log.d("OrderDetailActivity", "Received Order ID: " + currentOrder.getId());
-                tvOrderId.setText(currentOrder.getId());
-                tvUserId.setText(currentOrder.getUser()); // Hiển thị userId
-                tvTotalAmount.setText(String.valueOf(currentOrder.getTotalAmount()));
-                tvCreatedAt.setText(currentOrder.getCreatedAt().toString());
+                tvOrderId.setText("Order ID: " + currentOrder.getId());
+                tvUserId.setText("User ID: " + currentOrder.getUser());
+                tvTotalAmount.setText("Total Amount: $" + currentOrder.getTotalAmount());
+
+                String formattedDate = formatDate(currentOrder.getCreatedAt());
+                tvCreatedAt.setText("Created At: " + formattedDate);
 
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                         R.array.order_status_array, android.R.layout.simple_spinner_item);
@@ -72,6 +77,11 @@ public class OrderDetailActivity extends AppCompatActivity {
                 updateOrderStatus();
             }
         });
+    }
+
+    private String formatDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d/MM/yyyy HH:mm", Locale.getDefault());
+        return dateFormat.format(date);
     }
 
     private void updateOrderStatus() {
