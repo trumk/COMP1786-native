@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.yogadminapp.api.ApiService;
 import com.example.yogadminapp.api.RetrofitClient;
 import com.example.yogadminapp.models.ClassType;
+import com.example.yogadminapp.models.Order;
 import com.example.yogadminapp.models.User;
 import com.example.yogadminapp.models.YogaCourse;
 import com.google.android.material.card.MaterialCardView;
@@ -32,9 +33,10 @@ public class AdminHomeActivity extends AppCompatActivity {
     private TextView tvUserCount;
     private TextView tvClassCount;
     private TextView tvCourseCount;
-    private MaterialCardView cardUsers; // Khai báo cardUsers
+    private TextView tvOrderCount;
+    private MaterialCardView cardUsers;
+    private MaterialCardView cardOrders;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_home);
@@ -45,34 +47,32 @@ public class AdminHomeActivity extends AppCompatActivity {
         tvUserCount = findViewById(R.id.tvUserCount);
         tvClassCount = findViewById(R.id.tvClassCount);
         tvCourseCount = findViewById(R.id.tvCourseCount);
+        tvOrderCount = findViewById(R.id.tvOrderCount);
         cardUsers = findViewById(R.id.cardUsers);
+        cardOrders = findViewById(R.id.cardOrders);
 
         if (cardUsers != null) {
-            cardUsers.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(AdminHomeActivity.this, UserListActivity.class);
-                    startActivity(intent);
-                }
+            cardUsers.setOnClickListener(v -> {
+                Intent intent = new Intent(AdminHomeActivity.this, UserListActivity.class);
+                startActivity(intent);
             });
-        } else {
-            Log.e("AdminHomeActivity", "cardUsers is null");
         }
 
-        btnManageCourses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminHomeActivity.this, CourseListActivity.class);
+        if (cardOrders != null) {
+            cardOrders.setOnClickListener(v -> {
+                Intent intent = new Intent(AdminHomeActivity.this, OrderListActivity.class);
                 startActivity(intent);
-            }
+            });
+        }
+
+        btnManageCourses.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminHomeActivity.this, CourseListActivity.class);
+            startActivity(intent);
         });
 
-        btnManageClasses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminHomeActivity.this, ClassListActivity.class);
-                startActivity(intent);
-            }
+        btnManageClasses.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminHomeActivity.this, ClassListActivity.class);
+            startActivity(intent);
         });
 
         btnManageOrders.setOnClickListener(v -> {
@@ -83,6 +83,7 @@ public class AdminHomeActivity extends AppCompatActivity {
         loadUserCount();
         loadClassCount();
         loadCourseCount();
+        loadOrderCount(); // Gọi hàm loadOrderCount
     }
 
     private void loadUserCount() {
@@ -145,6 +146,28 @@ public class AdminHomeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<YogaCourse>> call, @NonNull Throwable t) {
+                Log.e("AdminHomeActivity", "Error: " + t.getMessage());
+                Toast.makeText(AdminHomeActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadOrderCount() {
+        ApiService apiService = RetrofitClient.getApiService();
+        apiService.getOrders().enqueue(new Callback<List<Order>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Order>> call, @NonNull Response<List<Order>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    int orderCount = response.body().size();
+                    tvOrderCount.setText(String.valueOf(orderCount));
+                } else {
+                    Log.e("AdminHomeActivity", "Failed to get orders: " + response.message());
+                    Toast.makeText(AdminHomeActivity.this, "Failed to get order count", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Order>> call, @NonNull Throwable t) {
                 Log.e("AdminHomeActivity", "Error: " + t.getMessage());
                 Toast.makeText(AdminHomeActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }

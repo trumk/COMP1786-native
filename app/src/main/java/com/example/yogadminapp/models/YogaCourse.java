@@ -20,7 +20,7 @@ public class YogaCourse implements Serializable {
     private double pricePerClass;
 
     @SerializedName("classType")
-    private List<ClassType> classTypes; // Danh sách các đối tượng ClassType
+    private List<ClassType> classTypes;
 
     @SerializedName("location")
     private String location;
@@ -28,7 +28,6 @@ public class YogaCourse implements Serializable {
     @SerializedName("participants")
     private List<String> participants;
 
-    // Constructor mặc định
     public YogaCourse() {
     }
 
@@ -43,7 +42,6 @@ public class YogaCourse implements Serializable {
         this.participants = participants;
     }
 
-    // Getter và Setter cho các trường
     public String getId() {
         return id;
     }

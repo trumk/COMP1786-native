@@ -1,11 +1,14 @@
 package com.example.yogadminapp.models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 public class Order implements Serializable {
-    private String id; // Thêm trường id
+    @SerializedName("_id")
+    private String id;
     private String user;
     private List<OrderItem> items;
     private double totalAmount;
@@ -21,7 +24,6 @@ public class Order implements Serializable {
         this.createdAt = createdAt;
     }
 
-    // Getter và Setter cho id
     public String getId() {
         return id;
     }
@@ -93,6 +95,33 @@ public class Order implements Serializable {
 
         public void setYogaCourse(YogaCourse yogaCourse) {
             this.yogaCourse = yogaCourse;
+        }
+    }
+
+    // Lớp UpdateOrderRequest bên trong Order
+    public static class UpdateOrderRequest implements Serializable {
+        private String orderId;
+        private String status;
+
+        public UpdateOrderRequest(String orderId, String status) {
+            this.orderId = orderId;
+            this.status = status;
+        }
+
+        public String getOrderId() {
+            return orderId;
+        }
+
+        public void setOrderId(String orderId) {
+            this.orderId = orderId;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
         }
     }
 }

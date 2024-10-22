@@ -33,7 +33,6 @@ public class OrderListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         btnBackToHome.setOnClickListener(v -> {
-            // Xử lý sự kiện nút "Back to Home"
             finish();
         });
 
@@ -50,10 +49,12 @@ public class OrderListActivity extends AppCompatActivity {
                     Log.d("OrderListActivity", "Orders: " + orders.toString());
 
                     orderAdapter = new OrderAdapter(OrderListActivity.this, orders, order -> {
+                        Log.d("OrderListActivity", "Selected Order ID: " + order.getId());
                         Intent intent = new Intent(OrderListActivity.this, OrderDetailActivity.class);
                         intent.putExtra("order", order);
                         startActivity(intent);
                     });
+
                     recyclerView.setAdapter(orderAdapter);
                 } else {
                     Log.e("OrderListActivity", "Failed to load orders: " + response.message());
@@ -68,5 +69,11 @@ public class OrderListActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadOrders();
+    }
+
 
 }

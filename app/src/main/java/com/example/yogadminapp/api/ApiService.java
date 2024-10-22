@@ -54,4 +54,8 @@ public interface ApiService {
 
     @GET("order")
     Call<List<Order>> getOrders();
+
+    @PUT("order/update-status")
+    Call<Order> updateOrderStatus(@Body Order.UpdateOrderRequest request);
+
 }
