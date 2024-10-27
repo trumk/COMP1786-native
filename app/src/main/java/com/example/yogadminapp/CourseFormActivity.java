@@ -1,6 +1,7 @@
 package com.example.yogadminapp;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -129,23 +130,25 @@ public class CourseFormActivity extends AppCompatActivity {
     private void selectDate(EditText inputDate) {
         final Calendar calendar = Calendar.getInstance();
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-            Calendar chosenDate = Calendar.getInstance();
-            chosenDate.set(year, month, dayOfMonth);
+            calendar.set(year, month, dayOfMonth);
 
-            // Kiểm tra xem ngày chọn có khớp với dayOfWeek đã chọn không
-            if (isValidDateForSelectedDayOfWeek(chosenDate)) {
-                String selectedDate = new SimpleDateFormat("yyyy-MM-dd'T'00:00:00.000'Z'", Locale.getDefault()).format(chosenDate.getTime());
-                inputDate.setText(selectedDate);
+            if (isValidDateForSelectedDayOfWeek(calendar)) {
+                new TimePickerDialog(this, (timeView, hourOfDay, minute) -> {
+                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    calendar.set(Calendar.MINUTE, minute);
+
+                    String selectedDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()).format(calendar.getTime());
+                    inputDate.setText(selectedDateTime);
+                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
             } else {
                 Toast.makeText(this, "Please select a valid " + selectedDayOfWeek, Toast.LENGTH_SHORT).show();
-                selectDate(inputDate); // Mở lại DatePickerDialog nếu ngày không hợp lệ
+                selectDate(inputDate); // Reopen the DatePickerDialog if the date is invalid
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
-        datePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
-
 
     private boolean isValidDateForSelectedDayOfWeek(Calendar date) {
         if (selectedDayOfWeek == null) return false;
@@ -169,6 +172,15 @@ public class CourseFormActivity extends AppCompatActivity {
 
                     selectedDayOfWeek = course.getDayOfWeek();
                     selectedClassTypes = course.getClassTypes() != null ? course.getClassTypes() : new ArrayList<>();
+
+                    for (ClassType ct : selectedClassTypes) {
+                        if (ct.getId() == null || ct.getId().isEmpty()) {
+                            Log.e("CourseFormActivity", "Error: Missing ID for ClassType: " + ct.getTypeName());
+                        } else {
+                            Log.d("CourseFormActivity", "Loaded ClassType with ID: " + ct.getId());
+                        }
+                    }
+
                     originalClassTypes = new ArrayList<>(selectedClassTypes);
                     classAdapter.setData(selectedClassTypes);
                 } else {
@@ -250,12 +262,14 @@ public class CourseFormActivity extends AppCompatActivity {
 
     private void saveClassTypes() {
         ApiService apiService = RetrofitClient.getApiService();
+        boolean hasNewClass = false;
 
         for (ClassType classType : selectedClassTypes) {
             boolean isNewClass = classType.getId() == null ||
                     originalClassTypes.stream().noneMatch(c -> c.getId().equals(classType.getId()));
 
             if (isNewClass) {
+                hasNewClass = true;
                 apiService.addClassTypeToCourse(courseId, classType).enqueue(new Callback<ClassType>() {
                     @Override
                     public void onResponse(Call<ClassType> call, Response<ClassType> response) {
@@ -273,9 +287,13 @@ public class CourseFormActivity extends AppCompatActivity {
                 });
             }
         }
-        Toast.makeText(this, "Only new classes saved to course", Toast.LENGTH_SHORT).show();
-    }
 
+        if (hasNewClass) {
+            Toast.makeText(this, "New classes saved to course", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "No new classes to save", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void editClass(ClassType classType) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -305,27 +323,87 @@ public class CourseFormActivity extends AppCompatActivity {
             classType.setTeacher(inputTeacher.getText().toString());
             classType.setDuration(Integer.parseInt(inputDuration.getText().toString()));
             classType.setDate(inputDate.getText().toString());
-            classAdapter.notifyDataSetChanged();
-            Toast.makeText(this, "Class updated in draft", Toast.LENGTH_SHORT).show();
+
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.updateClassTypeInCourse(classType.getId(), classType).enqueue(new Callback<ClassType>() {
+                @Override
+                public void onResponse(Call<ClassType> call, Response<ClassType> response) {
+                    if (response.isSuccessful()) {
+                        Log.d("CourseFormActivity", "ClassType updated successfully: " + response.body());
+                        classAdapter.notifyDataSetChanged();
+                        Toast.makeText(CourseFormActivity.this, "Class updated successfully", Toast.LENGTH_SHORT).show();
+                    } else {
+                        handleError(response);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ClassType> call, Throwable t) {
+                    Log.e("CourseFormActivity", "Error updating ClassType: " + t.getMessage());
+                    Toast.makeText(CourseFormActivity.this, "Error updating class: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
+
     private void deleteClass(ClassType classType) {
-        selectedClassTypes.remove(classType);
-        classAdapter.notifyDataSetChanged();
-        Toast.makeText(this, "Class deleted from draft", Toast.LENGTH_SHORT).show();
+        if (classType.getId() == null || classType.getId().isEmpty() || classType.getId().length() != 24) {
+            Log.e("CourseFormActivity", "Error: Invalid ClassType ID format - " + classType.getId());
+            Toast.makeText(this, "Cannot delete class: Invalid ClassType ID format.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Class")
+                .setMessage("Are you sure you want to delete this class?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    ApiService apiService = RetrofitClient.getApiService();
+                    apiService.removeClassTypeFromCourse(courseId, classType.getId()).enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            if (response.isSuccessful()) {
+                                Log.d("CourseFormActivity", "Successfully deleted ClassType with ID: " + classType.getId());
+                                selectedClassTypes.remove(classType);
+                                classAdapter.notifyDataSetChanged();
+                                Toast.makeText(CourseFormActivity.this, "Class deleted successfully", Toast.LENGTH_SHORT).show();
+                            } else {
+                                try {
+                                    Log.e("CourseFormActivity", "Failed to delete class - Server Response: " + response.errorBody().string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                handleError(response);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.e("CourseFormActivity", "Error deleting ClassType: " + t.getMessage());
+                            Toast.makeText(CourseFormActivity.this, "Error deleting class: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                })
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .show();
     }
 
     private void handleError(Response<?> response) {
-        Log.e("CourseFormActivity", "Failed: " + response.message());
         try {
-            String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
-            Toast.makeText(CourseFormActivity.this, errorBody, Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Log.e("CourseFormActivity", "Error parsing error body");
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                Log.e("CourseFormActivity", "Failed: " + errorBody);
+                Toast.makeText(CourseFormActivity.this, "Error: " + errorBody, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(CourseFormActivity.this, "Unknown error occurred", Toast.LENGTH_LONG).show();
+            }
+        } catch (IOException e) {
+            Log.e("CourseFormActivity", "Error parsing error body: " + e.getMessage());
+            Toast.makeText(CourseFormActivity.this, "Error: Could not parse error details", Toast.LENGTH_LONG).show();
         }
     }
+
 }

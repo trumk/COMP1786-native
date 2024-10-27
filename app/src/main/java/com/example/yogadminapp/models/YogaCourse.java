@@ -31,7 +31,6 @@ public class YogaCourse implements Serializable {
     public YogaCourse() {
     }
 
-    // Constructor với các tham số
     public YogaCourse(String id, String dayOfWeek, int capacity, double pricePerClass, List<ClassType> classTypes, String location, List<String> participants) {
         this.id = id;
         this.dayOfWeek = dayOfWeek;

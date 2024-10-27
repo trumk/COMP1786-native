@@ -17,15 +17,6 @@
         android:backgroundTint="@android:color/darker_gray"
         android:layout_marginBottom="16dp"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnAddClass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Yoga Class"
-        android:layout_gravity="end"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_marginBottom="16dp"/>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"

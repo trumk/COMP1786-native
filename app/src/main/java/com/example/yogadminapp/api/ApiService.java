@@ -25,11 +25,14 @@ public interface ApiService {
     @POST("admin/courses/{courseId}/class")
     Call<ClassType> addClassTypeToCourse(@Path("courseId") String courseId, @Body ClassType classType);
 
-    @PUT("admin/courses/class/{classTypeId}")
-    Call<ClassType> updateClassTypeInCourse(@Path("classTypeId") String classTypeId, @Body ClassType classType);
+    @PUT("admin/courses/class/{id}")
+    Call<ClassType> updateClassTypeInCourse(@Path("id") String id, @Body ClassType classType);
 
-    @DELETE("admin/courses/{courseId}/class/{classTypeId}")
-    Call<Void> removeClassTypeFromCourse(@Path("courseId") String courseId, @Path("classTypeId") String classTypeId);
+    @DELETE("admin/courses/{courseId}/class/{id}")
+    Call<Void> removeClassTypeFromCourse(
+            @Path("courseId") String courseId,
+            @Path("id") String classTypeId
+    );
 
     @DELETE("class/{id}")
     Call<Void> deleteClassType(@Path("id") String id);
