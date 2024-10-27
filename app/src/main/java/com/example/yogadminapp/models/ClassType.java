@@ -28,14 +28,12 @@ public class ClassType implements Serializable {
 
     public ClassType() {}
 
-    public ClassType(String id, String typeName, String description, String teacher, String date, int duration, int version) {
-        this.id = id;
+    public ClassType(String typeName, String description, String teacher, String date, int duration) {
         this.typeName = typeName;
         this.description = description;
         this.teacher = teacher;
         this.date = date;
         this.duration = duration;
-        this.version = version;
     }
 
     public ClassType(String id, String typeName) {

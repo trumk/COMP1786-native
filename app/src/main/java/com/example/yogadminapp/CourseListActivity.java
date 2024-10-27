@@ -97,7 +97,6 @@ public class CourseListActivity extends AppCompatActivity {
         String query = etSearch.getText().toString().trim();
         String dayOfWeek = spinnerDayOfWeek.getSelectedItem().toString(); // Get selected day
 
-        // Log thông tin tìm kiếm
         Log.d("CourseListActivity", "Searching for: " + query + ", Day: " + dayOfWeek);
 
         ApiService apiService = RetrofitClient.getApiService();

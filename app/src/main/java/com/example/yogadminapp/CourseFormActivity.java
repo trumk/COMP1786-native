@@ -1,6 +1,6 @@
 package com.example.yogadminapp;
 
-import android.content.Intent;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +9,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.yogadminapp.adapter.ClassAdapter;
 import com.example.yogadminapp.api.ApiService;
 import com.example.yogadminapp.api.RetrofitClient;
 import com.example.yogadminapp.models.ClassType;
@@ -17,20 +20,24 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class CourseFormActivity extends AppCompatActivity {
     private EditText etDayOfWeek, etCapacity, etPricePerClass, etLocation;
-    private Button btnSave, btnBackToList, btnSelectClasses;
+    private Button btnSave, btnBackToList, btnAddClass;
+    private RecyclerView rvClasses;
+    private ClassAdapter classAdapter;
     private String courseId;
+    private boolean isEditMode = false;
     private String selectedDayOfWeek = null;
-    private List<ClassType> classTypesList = new ArrayList<>();
     private List<ClassType> selectedClassTypes = new ArrayList<>();
+    private List<ClassType> originalClassTypes = new ArrayList<>();
+    private Calendar selectedCalendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,128 +50,109 @@ public class CourseFormActivity extends AppCompatActivity {
         etLocation = findViewById(R.id.etLocation);
         btnSave = findViewById(R.id.btnSave);
         btnBackToList = findViewById(R.id.btnBackToList);
-        btnSelectClasses = findViewById(R.id.btnSelectClasses);
+        btnAddClass = findViewById(R.id.btnAddClass);
+        rvClasses = findViewById(R.id.rvClasses);
+
+        rvClasses.setLayoutManager(new LinearLayoutManager(this));
+        classAdapter = new ClassAdapter(selectedClassTypes, new ClassAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(ClassType classType) {
+                Toast.makeText(CourseFormActivity.this, "Clicked: " + classType.getTypeName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onEditClick(ClassType classType) {
+                editClass(classType);
+            }
+
+            @Override
+            public void onDeleteClick(ClassType classType) {
+                deleteClass(classType);
+            }
+        });
+
+        rvClasses.setAdapter(classAdapter);
 
         if (getIntent().hasExtra("courseId")) {
             courseId = getIntent().getStringExtra("courseId");
+            isEditMode = true;
             loadCourseDetails(courseId);
         }
 
-        etDayOfWeek.setOnClickListener(v -> selectDayOfWeek());
-        btnSelectClasses.setOnClickListener(v -> selectClasses());
+        updateUI();
 
+        etDayOfWeek.setOnClickListener(v -> selectDayOfWeek());
         btnBackToList.setOnClickListener(v -> finish());
+        btnAddClass.setOnClickListener(v -> addClass());
 
         btnSave.setOnClickListener(v -> {
             if (courseId == null) {
                 addCourse();
             } else {
-                updateCourse();
+                saveClassTypes();
             }
         });
-
-        loadClassTypes();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (courseId != null) {
-            loadCourseDetails(courseId);
+    private void updateUI() {
+        if (isEditMode) {
+            btnAddClass.setVisibility(View.VISIBLE);
+            rvClasses.setVisibility(View.VISIBLE);
+        } else {
+            btnAddClass.setVisibility(View.GONE);
+            rvClasses.setVisibility(View.GONE);
         }
-        loadClassTypes();
     }
 
     private void selectDayOfWeek() {
-        String[] allDaysOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-        int today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1;
-
-        String[] sortedDaysOfWeek = new String[7];
-        for (int i = 0; i < 7; i++) {
-            sortedDaysOfWeek[i] = allDaysOfWeek[(today + i) % 7];
-        }
-
+        String[] daysOfWeek = getDynamicDayOfWeek();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Day of the Week");
-        builder.setItems(sortedDaysOfWeek, (dialog, which) -> {
-            etDayOfWeek.setText(sortedDaysOfWeek[which]);
-            selectedDayOfWeek = sortedDaysOfWeek[which];
+        builder.setItems(daysOfWeek, (dialog, which) -> {
+            etDayOfWeek.setText(daysOfWeek[which]);
+            selectedDayOfWeek = daysOfWeek[which];
         });
         builder.show();
     }
 
-    private void selectClasses() {
-        if (selectedDayOfWeek == null) {
-            Toast.makeText(this, "Please select a day of the week first.", Toast.LENGTH_SHORT).show();
-            return;
+    private String[] getDynamicDayOfWeek() {
+        String[] allDays = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        int todayIndex = selectedCalendar.get(Calendar.DAY_OF_WEEK) - 1;
+        String[] dynamicDays = new String[7];
+
+        for (int i = 0; i < 7; i++) {
+            dynamicDays[i] = allDays[(todayIndex + i) % 7];
         }
-
-        // Lọc danh sách lớp học theo ngày đã chọn
-        List<ClassType> filteredClassTypes = new ArrayList<>();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
-
-        for (ClassType classType : classTypesList) {
-            try {
-                // Chuyển đổi trường date của lớp học sang ngày trong tuần
-                Date classDate = dateFormat.parse(classType.getDate());
-                Calendar classCalendar = Calendar.getInstance();
-                classCalendar.setTime(classDate);
-                String classDayOfWeek = dayFormat.format(classCalendar.getTime());
-
-                // So sánh với ngày đã chọn
-                if (classDayOfWeek.equalsIgnoreCase(selectedDayOfWeek)) {
-                    filteredClassTypes.add(classType);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (filteredClassTypes.isEmpty()) {
-            Toast.makeText(this, "No classes available for the selected day.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Tạo danh sách các tên lớp học để hiển thị trong hộp thoại
-        CharSequence[] items = new CharSequence[filteredClassTypes.size()];
-        boolean[] selectedItems = new boolean[filteredClassTypes.size()];
-        for (int i = 0; i < filteredClassTypes.size(); i++) {
-            items[i] = filteredClassTypes.get(i).getTypeName();
-            selectedItems[i] = selectedClassTypes.contains(filteredClassTypes.get(i));
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select Classes")
-                .setMultiChoiceItems(items, selectedItems, (dialog, which, isChecked) -> {
-                    if (isChecked) {
-                        selectedClassTypes.add(filteredClassTypes.get(which));
-                    } else {
-                        selectedClassTypes.remove(filteredClassTypes.get(which));
-                    }
-                })
-                .setPositiveButton("OK", null)
-                .show();
+        return dynamicDays;
     }
 
-    private void loadClassTypes() {
-        ApiService apiService = RetrofitClient.getApiService();
-        apiService.getAllClassTypes().enqueue(new Callback<List<ClassType>>() {
-            @Override
-            public void onResponse(Call<List<ClassType>> call, Response<List<ClassType>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    classTypesList = response.body();
-                    Log.d("CourseFormActivity", "Class types loaded: " + classTypesList.size());
-                } else {
-                    Log.e("CourseFormActivity", "Failed to load class types: " + response.message());
-                }
-            }
+    private void selectDate(EditText inputDate) {
+        final Calendar calendar = Calendar.getInstance();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            Calendar chosenDate = Calendar.getInstance();
+            chosenDate.set(year, month, dayOfMonth);
 
-            @Override
-            public void onFailure(Call<List<ClassType>> call, Throwable t) {
-                Log.e("CourseFormActivity", "Error: " + t.getMessage());
+            // Kiểm tra xem ngày chọn có khớp với dayOfWeek đã chọn không
+            if (isValidDateForSelectedDayOfWeek(chosenDate)) {
+                String selectedDate = new SimpleDateFormat("yyyy-MM-dd'T'00:00:00.000'Z'", Locale.getDefault()).format(chosenDate.getTime());
+                inputDate.setText(selectedDate);
+            } else {
+                Toast.makeText(this, "Please select a valid " + selectedDayOfWeek, Toast.LENGTH_SHORT).show();
+                selectDate(inputDate); // Mở lại DatePickerDialog nếu ngày không hợp lệ
             }
-        });
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+        datePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
+        datePickerDialog.show();
+    }
+
+
+    private boolean isValidDateForSelectedDayOfWeek(Calendar date) {
+        if (selectedDayOfWeek == null) return false;
+
+        int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+        String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        return days[dayOfWeek - 1].equalsIgnoreCase(selectedDayOfWeek);
     }
 
     private void loadCourseDetails(String courseId) {
@@ -180,18 +168,11 @@ public class CourseFormActivity extends AppCompatActivity {
                     etLocation.setText(course.getLocation());
 
                     selectedDayOfWeek = course.getDayOfWeek();
-
-                    List<ClassType> classTypes = course.getClassTypes();
-                    if (classTypes != null && !classTypes.isEmpty()) {
-                        selectedClassTypes = classTypes;
-                    } else {
-                        selectedClassTypes.clear();
-                    }
-
-                    Log.d("CourseFormActivity", "Class types loaded: " + selectedClassTypes.size());
+                    selectedClassTypes = course.getClassTypes() != null ? course.getClassTypes() : new ArrayList<>();
+                    originalClassTypes = new ArrayList<>(selectedClassTypes);
+                    classAdapter.setData(selectedClassTypes);
                 } else {
-                    Log.e("CourseFormActivity", "Failed to load course details: " + response.message());
-                    Toast.makeText(CourseFormActivity.this, "Failed to load course details", Toast.LENGTH_SHORT).show();
+                    handleError(response);
                 }
             }
 
@@ -209,7 +190,7 @@ public class CourseFormActivity extends AppCompatActivity {
                 selectedDayOfWeek,
                 Integer.parseInt(etCapacity.getText().toString().trim()),
                 Double.parseDouble(etPricePerClass.getText().toString().trim()),
-                selectedClassTypes, // Sử dụng danh sách các đối tượng ClassType
+                null,
                 etLocation.getText().toString().trim(),
                 null
         );
@@ -222,13 +203,7 @@ public class CourseFormActivity extends AppCompatActivity {
                     Toast.makeText(CourseFormActivity.this, "Course added successfully", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    try {
-                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
-                        Log.e("CourseFormActivity", "Failed to add course: " + response.message() + ", Error body: " + errorBody);
-                        Toast.makeText(CourseFormActivity.this, errorBody, Toast.LENGTH_LONG).show();
-                    } catch (Exception e) {
-                        Log.e("CourseFormActivity", "Failed to add course: " + response.message());
-                    }
+                    handleError(response);
                 }
             }
 
@@ -240,43 +215,117 @@ public class CourseFormActivity extends AppCompatActivity {
         });
     }
 
-    private void updateCourse() {
-        YogaCourse updatedCourse = new YogaCourse(
-                courseId,
-                selectedDayOfWeek,
-                Integer.parseInt(etCapacity.getText().toString().trim()),
-                Double.parseDouble(etPricePerClass.getText().toString().trim()),
-                selectedClassTypes, // Sử dụng danh sách các đối tượng ClassType
-                etLocation.getText().toString().trim(),
-                null
-        );
+    private void addClass() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Class");
 
-        ApiService apiService = RetrofitClient.getApiService();
-        apiService.updateCourse(courseId, updatedCourse).enqueue(new Callback<YogaCourse>() {
-            @Override
-            public void onResponse(Call<YogaCourse> call, Response<YogaCourse> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(CourseFormActivity.this, "Course updated successfully", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Log.e("CourseFormActivity", "Failed to update course: " + response.message());
-                    if (response.errorBody() != null) {
-                        try {
-                            String errorBody = response.errorBody().string();
-                            Log.e("CourseFormActivity", "Error body: " + errorBody);
-                            Toast.makeText(CourseFormActivity.this, errorBody, Toast.LENGTH_LONG).show(); // Hiển thị thông báo lỗi cụ thể
-                        } catch (Exception e) {
-                            Log.e("CourseFormActivity", "Failed to read error body");
-                        }
-                    }
-                }
-            }
+        View viewInflated = getLayoutInflater().inflate(R.layout.dialog_add_class, null);
+        builder.setView(viewInflated);
 
-            @Override
-            public void onFailure(Call<YogaCourse> call, Throwable t) {
-                Log.e("CourseFormActivity", "Error: " + t.getMessage());
-            }
+        final EditText inputTypeName = viewInflated.findViewById(R.id.inputTypeName);
+        final EditText inputDescription = viewInflated.findViewById(R.id.inputDescription);
+        final EditText inputTeacher = viewInflated.findViewById(R.id.inputTeacher);
+        final EditText inputDuration = viewInflated.findViewById(R.id.inputDuration);
+        final EditText inputDate = viewInflated.findViewById(R.id.inputDate);
+
+        inputDate.setOnClickListener(v -> selectDate(inputDate));
+
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            dialog.dismiss();
+            String typeName = inputTypeName.getText().toString();
+            String description = inputDescription.getText().toString();
+            String teacher = inputTeacher.getText().toString();
+            String date = inputDate.getText().toString();
+            int duration = Integer.parseInt(inputDuration.getText().toString());
+
+            ClassType newClassType = new ClassType(typeName, description, teacher, date, duration);
+            selectedClassTypes.add(newClassType);
+            classAdapter.notifyDataSetChanged();
+            Toast.makeText(this, "Class added to draft", Toast.LENGTH_SHORT).show();
         });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
     }
 
+    private void saveClassTypes() {
+        ApiService apiService = RetrofitClient.getApiService();
+
+        for (ClassType classType : selectedClassTypes) {
+            boolean isNewClass = classType.getId() == null ||
+                    originalClassTypes.stream().noneMatch(c -> c.getId().equals(classType.getId()));
+
+            if (isNewClass) {
+                apiService.addClassTypeToCourse(courseId, classType).enqueue(new Callback<ClassType>() {
+                    @Override
+                    public void onResponse(Call<ClassType> call, Response<ClassType> response) {
+                        if (response.isSuccessful()) {
+                            Log.d("CourseFormActivity", "New ClassType saved: " + response.body());
+                        } else {
+                            handleError(response);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ClassType> call, Throwable t) {
+                        Log.e("CourseFormActivity", "Error saving new ClassType: " + t.getMessage());
+                    }
+                });
+            }
+        }
+        Toast.makeText(this, "Only new classes saved to course", Toast.LENGTH_SHORT).show();
+    }
+
+
+    private void editClass(ClassType classType) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit Class");
+
+        View viewInflated = getLayoutInflater().inflate(R.layout.dialog_add_class, null);
+        builder.setView(viewInflated);
+
+        final EditText inputTypeName = viewInflated.findViewById(R.id.inputTypeName);
+        final EditText inputDescription = viewInflated.findViewById(R.id.inputDescription);
+        final EditText inputTeacher = viewInflated.findViewById(R.id.inputTeacher);
+        final EditText inputDuration = viewInflated.findViewById(R.id.inputDuration);
+        final EditText inputDate = viewInflated.findViewById(R.id.inputDate);
+
+        inputTypeName.setText(classType.getTypeName());
+        inputDescription.setText(classType.getDescription());
+        inputTeacher.setText(classType.getTeacher());
+        inputDuration.setText(String.valueOf(classType.getDuration()));
+        inputDate.setText(classType.getDate());
+
+        inputDate.setOnClickListener(v -> selectDate(inputDate));
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            dialog.dismiss();
+            classType.setTypeName(inputTypeName.getText().toString());
+            classType.setDescription(inputDescription.getText().toString());
+            classType.setTeacher(inputTeacher.getText().toString());
+            classType.setDuration(Integer.parseInt(inputDuration.getText().toString()));
+            classType.setDate(inputDate.getText().toString());
+            classAdapter.notifyDataSetChanged();
+            Toast.makeText(this, "Class updated in draft", Toast.LENGTH_SHORT).show();
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void deleteClass(ClassType classType) {
+        selectedClassTypes.remove(classType);
+        classAdapter.notifyDataSetChanged();
+        Toast.makeText(this, "Class deleted from draft", Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleError(Response<?> response) {
+        Log.e("CourseFormActivity", "Failed: " + response.message());
+        try {
+            String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+            Toast.makeText(CourseFormActivity.this, errorBody, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Log.e("CourseFormActivity", "Error parsing error body");
+        }
+    }
 }

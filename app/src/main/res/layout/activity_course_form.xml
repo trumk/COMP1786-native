@@ -1,83 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
+    android:orientation="vertical"
     android:padding="16dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:fillViewport="true">
 
-        <EditText
-            android:id="@+id/etDayOfWeek"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Day of the Week"
-            android:minHeight="56dp"
-            android:padding="16dp"
-            android:layout_marginBottom="8dp"
-            android:focusable="false"
-            android:clickable="true"/>
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/etCapacity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Capacity"
-            android:minHeight="56dp"
-            android:padding="16dp"
-            android:layout_marginBottom="8dp"/>
+            <EditText
+                android:id="@+id/etDayOfWeek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Day of the Week"
+                android:minHeight="56dp"
+                android:padding="16dp"
+                android:layout_marginBottom="8dp"
+                android:focusable="false"
+                android:clickable="true"/>
 
-        <EditText
-            android:id="@+id/etPricePerClass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Price per Class"
-            android:minHeight="56dp"
-            android:padding="16dp"
-            android:layout_marginBottom="8dp"/>
+            <EditText
+                android:id="@+id/etCapacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Capacity"
+                android:minHeight="56dp"
+                android:padding="16dp"
+                android:layout_marginBottom="8dp"/>
 
-        <EditText
-            android:id="@+id/etLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Location"
-            android:minHeight="56dp"
-            android:padding="16dp"
-            android:layout_marginBottom="8dp"/>
+            <EditText
+                android:id="@+id/etPricePerClass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Price per Class"
+                android:minHeight="56dp"
+                android:padding="16dp"
+                android:layout_marginBottom="8dp"/>
 
-        <Button
-            android:id="@+id/btnSelectClasses"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Select Classes"
-            android:minHeight="56dp"
-            android:layout_marginBottom="8dp"/>
+            <EditText
+                android:id="@+id/etLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Location"
+                android:minHeight="56dp"
+                android:padding="16dp"
+                android:layout_marginBottom="8dp"/>
 
-        <EditText
-            android:id="@+id/etDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Description"
-            android:minHeight="56dp"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp"/>
+            <EditText
+                android:id="@+id/etDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Description"
+                android:minHeight="56dp"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"/>
 
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save"
-            android:minHeight="56dp"
-            android:layout_marginBottom="8dp"/>
+            <Button
+                android:id="@+id/btnAddClass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Class"
+                android:minHeight="56dp"
+                android:layout_marginBottom="8dp"/>
 
-        <Button
-            android:id="@+id/btnBackToList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Back"
-            android:minHeight="56dp"/>
-    </LinearLayout>
-</ScrollView>
+        </LinearLayout>
+    </ScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvClasses"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:minHeight="56dp"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnBackToList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:minHeight="56dp"/>
+</LinearLayout>

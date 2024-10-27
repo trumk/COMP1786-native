@@ -53,13 +53,13 @@ public class ClassFormActivity extends AppCompatActivity {
 
         btnBackToList.setOnClickListener(v -> finish());
 
-        btnSave.setOnClickListener(v -> {
-            if (classId == null) {
-                saveClass();
-            } else {
-                updateClass();
-            }
-        });
+//        btnSave.setOnClickListener(v -> {
+//            if (classId == null) {
+//                saveClass();
+//            } else {
+//                updateClass();
+//            }
+//        });
     }
 
     private void showDateTimePicker() {
@@ -143,98 +143,98 @@ public class ClassFormActivity extends AppCompatActivity {
     }
 
 
-    private void saveClass() {
-        String className = etClassName.getText().toString().trim();
-        String description = etDescription.getText().toString().trim();
-        String teacher = etTeacher.getText().toString().trim();
-        String date = etDate.getText().toString().trim();
-        int duration = Integer.parseInt(etDuration.getText().toString().trim());
-
-        if (className.isEmpty()) {
-            Toast.makeText(ClassFormActivity.this, "Class name is required", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (date.isEmpty()) {
-            Toast.makeText(ClassFormActivity.this, "Date is required", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Log.d("ClassFormActivity", "Saving class with details: " +
-                "Name: " + className + ", " +
-                "Description: " + description + ", " +
-                "Teacher: " + teacher + ", " +
-                "Date: " + date);
-
-        ClassType newClass = new ClassType(null, className, description, teacher, date, duration, 0);
-        ApiService apiService = RetrofitClient.getApiService();
-        apiService.createClassType(newClass).enqueue(new Callback<ClassType>() {
-            @Override
-            public void onResponse(Call<ClassType> call, Response<ClassType> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(ClassFormActivity.this, "Class added successfully", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    String errorMessage = "Failed to add class. Response code: " + response.code();
-                    if (response.errorBody() != null) {
-                        try {
-                            errorMessage += ", Error body: " + response.errorBody().string();
-                        } catch (Exception e) {
-                            Log.e("ClassFormActivity", "Error reading errorBody: " + e.getMessage());
-                        }
-                    }
-                    Log.e("ClassFormActivity", errorMessage);
-                    Toast.makeText(ClassFormActivity.this, "Failed to add class", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ClassType> call, Throwable t) {
-                // Log chi tiết lỗi khi không thể gọi API
-                Log.e("ClassFormActivity", "API call failed: " + t.getMessage(), t);
-                Toast.makeText(ClassFormActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void updateClass() {
-        String className = etClassName.getText().toString().trim();
-        String description = etDescription.getText().toString().trim();
-        String teacher = etTeacher.getText().toString().trim();
-        int duration = Integer.parseInt(etDuration.getText().toString().trim());
-
-        if (className.isEmpty()) {
-            Toast.makeText(ClassFormActivity.this, "Class name is required", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        String date = isoFormat.format(calendar.getTime());
-
-        if (date.isEmpty()) {
-            Toast.makeText(ClassFormActivity.this, "Date is required", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        ClassType updatedClass = new ClassType(classId, className, description, teacher,date, duration,0);
-        ApiService apiService = RetrofitClient.getApiService();
-        apiService.updateClassType(classId, updatedClass).enqueue(new Callback<ClassType>() {
-            @Override
-            public void onResponse(Call<ClassType> call, Response<ClassType> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(ClassFormActivity.this, "Class updated successfully", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Log.e("ClassFormActivity", "Failed to update class: " + response.message());
-                    Toast.makeText(ClassFormActivity.this, "Failed to update class", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ClassType> call, Throwable t) {
-                Log.e("ClassFormActivity", "Error: " + t.getMessage());
-                Toast.makeText(ClassFormActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+//    private void saveClass() {
+//        String className = etClassName.getText().toString().trim();
+//        String description = etDescription.getText().toString().trim();
+//        String teacher = etTeacher.getText().toString().trim();
+//        String date = etDate.getText().toString().trim();
+//        int duration = Integer.parseInt(etDuration.getText().toString().trim());
+//
+//        if (className.isEmpty()) {
+//            Toast.makeText(ClassFormActivity.this, "Class name is required", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        if (date.isEmpty()) {
+//            Toast.makeText(ClassFormActivity.this, "Date is required", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        Log.d("ClassFormActivity", "Saving class with details: " +
+//                "Name: " + className + ", " +
+//                "Description: " + description + ", " +
+//                "Teacher: " + teacher + ", " +
+//                "Date: " + date);
+//
+//        ClassType newClass = new ClassType(null, className, description, teacher, date, duration, 0);
+//        ApiService apiService = RetrofitClient.getApiService();
+//        apiService.createClassType(newClass).enqueue(new Callback<ClassType>() {
+//            @Override
+//            public void onResponse(Call<ClassType> call, Response<ClassType> response) {
+//                if (response.isSuccessful()) {
+//                    Toast.makeText(ClassFormActivity.this, "Class added successfully", Toast.LENGTH_SHORT).show();
+//                    finish();
+//                } else {
+//                    String errorMessage = "Failed to add class. Response code: " + response.code();
+//                    if (response.errorBody() != null) {
+//                        try {
+//                            errorMessage += ", Error body: " + response.errorBody().string();
+//                        } catch (Exception e) {
+//                            Log.e("ClassFormActivity", "Error reading errorBody: " + e.getMessage());
+//                        }
+//                    }
+//                    Log.e("ClassFormActivity", errorMessage);
+//                    Toast.makeText(ClassFormActivity.this, "Failed to add class", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ClassType> call, Throwable t) {
+//                // Log chi tiết lỗi khi không thể gọi API
+//                Log.e("ClassFormActivity", "API call failed: " + t.getMessage(), t);
+//                Toast.makeText(ClassFormActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
+//
+//    private void updateClass() {
+//        String className = etClassName.getText().toString().trim();
+//        String description = etDescription.getText().toString().trim();
+//        String teacher = etTeacher.getText().toString().trim();
+//        int duration = Integer.parseInt(etDuration.getText().toString().trim());
+//
+//        if (className.isEmpty()) {
+//            Toast.makeText(ClassFormActivity.this, "Class name is required", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+//        String date = isoFormat.format(calendar.getTime());
+//
+//        if (date.isEmpty()) {
+//            Toast.makeText(ClassFormActivity.this, "Date is required", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        ClassType updatedClass = new ClassType(classId, className, description, teacher,date, duration,0);
+//        ApiService apiService = RetrofitClient.getApiService();
+//        apiService.updateClassType(classId, updatedClass).enqueue(new Callback<ClassType>() {
+//            @Override
+//            public void onResponse(Call<ClassType> call, Response<ClassType> response) {
+//                if (response.isSuccessful()) {
+//                    Toast.makeText(ClassFormActivity.this, "Class updated successfully", Toast.LENGTH_SHORT).show();
+//                    finish();
+//                } else {
+//                    Log.e("ClassFormActivity", "Failed to update class: " + response.message());
+//                    Toast.makeText(ClassFormActivity.this, "Failed to update class", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ClassType> call, Throwable t) {
+//                Log.e("ClassFormActivity", "Error: " + t.getMessage());
+//                Toast.makeText(ClassFormActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 }

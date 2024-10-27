@@ -16,17 +16,20 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
-    @GET("class")
+    @GET("admin/courses/class")
     Call<List<ClassType>> getAllClassTypes();
 
-    @GET("class/{id}")
+    @GET("admin/courses/class/{id}")
     Call<ClassType> getClassTypeById(@Path("id") String id);
 
-    @POST("class")
-    Call<ClassType> createClassType(@Body ClassType classType);
+    @POST("admin/courses/{courseId}/class")
+    Call<ClassType> addClassTypeToCourse(@Path("courseId") String courseId, @Body ClassType classType);
 
-    @PUT("class/{id}")
-    Call<ClassType> updateClassType(@Path("id") String id, @Body ClassType classType);
+    @PUT("admin/courses/class/{classTypeId}")
+    Call<ClassType> updateClassTypeInCourse(@Path("classTypeId") String classTypeId, @Body ClassType classType);
+
+    @DELETE("admin/courses/{courseId}/class/{classTypeId}")
+    Call<Void> removeClassTypeFromCourse(@Path("courseId") String courseId, @Path("classTypeId") String classTypeId);
 
     @DELETE("class/{id}")
     Call<Void> deleteClassType(@Path("id") String id);
@@ -40,7 +43,7 @@ public interface ApiService {
     @GET("admin/courses")
     Call<List<YogaCourse>> getAllCourses();
 
-    @GET("admin/courses/not/{id}")
+    @GET("admin/courses/ad/{id}")
     Call<YogaCourse> getCourseById(@Path("id") String id);
 
     @POST("admin/courses")
@@ -57,5 +60,4 @@ public interface ApiService {
 
     @PUT("order/update-status")
     Call<Order> updateOrderStatus(@Body Order.UpdateOrderRequest request);
-
 }

@@ -58,8 +58,6 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
         holder.deleteButton.setOnClickListener(v -> listener.onDeleteClick(classType));
     }
 
-
-
     @Override
     public int getItemCount() {
         return classTypeList.size();
@@ -73,6 +71,12 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
             e.printStackTrace();
             return dateString;
         }
+    }
+
+    public void setData(List<ClassType> newClassTypes) {
+        classTypeList.clear();
+        classTypeList.addAll(newClassTypes);
+        notifyDataSetChanged();
     }
 
     public static class ClassViewHolder extends RecyclerView.ViewHolder {
@@ -90,6 +94,4 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
             deleteButton = itemView.findViewById(R.id.btnDeleteClass);
         }
     }
-
-
 }

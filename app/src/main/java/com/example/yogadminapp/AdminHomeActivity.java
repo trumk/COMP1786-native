@@ -65,10 +65,10 @@ public class AdminHomeActivity extends AppCompatActivity {
             });
         }
 
-        btnManageCourses.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminHomeActivity.this, CourseListActivity.class);
-            startActivity(intent);
-        });
+            btnManageCourses.setOnClickListener(v -> {
+                Intent intent = new Intent(AdminHomeActivity.this, CourseListActivity.class);
+                startActivity(intent);
+            });
 
         btnManageClasses.setOnClickListener(v -> {
             Intent intent = new Intent(AdminHomeActivity.this, ClassListActivity.class);

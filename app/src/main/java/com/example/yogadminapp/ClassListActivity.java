@@ -46,7 +46,6 @@ public class ClassListActivity extends AppCompatActivity {
             }
         });
 
-        // Thêm nút "Add Class"
         btnAddClass = findViewById(R.id.btnAddClass);
         btnAddClass.setOnClickListener(new View.OnClickListener() {
             @Override
