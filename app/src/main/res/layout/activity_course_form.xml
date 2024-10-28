@@ -27,6 +27,17 @@
                 android:clickable="true"/>
 
             <EditText
+                android:id="@+id/etTimeOfCourse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Time of Course (Start - End)"
+                android:minHeight="56dp"
+                android:padding="16dp"
+                android:layout_marginBottom="8dp"
+                android:focusable="false"
+                android:clickable="true"/>
+
+            <EditText
                 android:id="@+id/etCapacity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -52,15 +63,6 @@
                 android:minHeight="56dp"
                 android:padding="16dp"
                 android:layout_marginBottom="8dp"/>
-
-            <EditText
-                android:id="@+id/etDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Description"
-                android:minHeight="56dp"
-                android:padding="16dp"
-                android:layout_marginBottom="16dp"/>
 
             <Button
                 android:id="@+id/btnAddClass"

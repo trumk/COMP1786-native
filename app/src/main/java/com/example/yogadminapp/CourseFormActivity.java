@@ -29,13 +29,14 @@ import java.util.List;
 import java.util.Locale;
 
 public class CourseFormActivity extends AppCompatActivity {
-    private EditText etDayOfWeek, etCapacity, etPricePerClass, etLocation;
+    private EditText etDayOfWeek, etTimeOfCourse, etCapacity, etPricePerClass, etLocation;
     private Button btnSave, btnBackToList, btnAddClass;
     private RecyclerView rvClasses;
     private ClassAdapter classAdapter;
     private String courseId;
     private boolean isEditMode = false;
     private String selectedDayOfWeek = null;
+    private String selectedTimeOfCourse = null;
     private List<ClassType> selectedClassTypes = new ArrayList<>();
     private List<ClassType> originalClassTypes = new ArrayList<>();
     private Calendar selectedCalendar = Calendar.getInstance();
@@ -46,6 +47,7 @@ public class CourseFormActivity extends AppCompatActivity {
         setContentView(R.layout.activity_course_form);
 
         etDayOfWeek = findViewById(R.id.etDayOfWeek);
+        etTimeOfCourse = findViewById(R.id.etTimeOfCourse);
         etCapacity = findViewById(R.id.etCapacity);
         etPricePerClass = findViewById(R.id.etPricePerClass);
         etLocation = findViewById(R.id.etLocation);
@@ -71,7 +73,6 @@ public class CourseFormActivity extends AppCompatActivity {
                 deleteClass(classType);
             }
         });
-
         rvClasses.setAdapter(classAdapter);
 
         if (getIntent().hasExtra("courseId")) {
@@ -83,17 +84,20 @@ public class CourseFormActivity extends AppCompatActivity {
         updateUI();
 
         etDayOfWeek.setOnClickListener(v -> selectDayOfWeek());
+        etTimeOfCourse.setOnClickListener(v -> selectTimeOfCourse());
         btnBackToList.setOnClickListener(v -> finish());
         btnAddClass.setOnClickListener(v -> addClass());
 
         btnSave.setOnClickListener(v -> {
-            if (courseId == null) {
-                addCourse();
+            if (isEditMode) {
+                updateCourse();
             } else {
-                saveClassTypes();
+                addCourse();
             }
+            saveClassTypes();
         });
     }
+
 
     private void updateUI() {
         if (isEditMode) {
@@ -116,6 +120,23 @@ public class CourseFormActivity extends AppCompatActivity {
         builder.show();
     }
 
+    private void selectTimeOfCourse() {
+        final Calendar calendar = Calendar.getInstance();
+        new TimePickerDialog(this, (view, startHour, startMinute) -> {
+            calendar.set(Calendar.HOUR_OF_DAY, startHour);
+            calendar.set(Calendar.MINUTE, startMinute);
+            String startTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(calendar.getTime());
+
+            new TimePickerDialog(this, (endView, endHour, endMinute) -> {
+                calendar.set(Calendar.HOUR_OF_DAY, endHour);
+                calendar.set(Calendar.MINUTE, endMinute);
+                String endTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(calendar.getTime());
+
+                etTimeOfCourse.setText(startTime + " - " + endTime);
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+    }
+
     private String[] getDynamicDayOfWeek() {
         String[] allDays = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
         int todayIndex = selectedCalendar.get(Calendar.DAY_OF_WEEK) - 1;
@@ -125,29 +146,6 @@ public class CourseFormActivity extends AppCompatActivity {
             dynamicDays[i] = allDays[(todayIndex + i) % 7];
         }
         return dynamicDays;
-    }
-
-    private void selectDate(EditText inputDate) {
-        final Calendar calendar = Calendar.getInstance();
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-            calendar.set(year, month, dayOfMonth);
-
-            if (isValidDateForSelectedDayOfWeek(calendar)) {
-                new TimePickerDialog(this, (timeView, hourOfDay, minute) -> {
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                    calendar.set(Calendar.MINUTE, minute);
-
-                    String selectedDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()).format(calendar.getTime());
-                    inputDate.setText(selectedDateTime);
-                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
-            } else {
-                Toast.makeText(this, "Please select a valid " + selectedDayOfWeek, Toast.LENGTH_SHORT).show();
-                selectDate(inputDate); // Reopen the DatePickerDialog if the date is invalid
-            }
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-
-        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
-        datePickerDialog.show();
     }
 
     private boolean isValidDateForSelectedDayOfWeek(Calendar date) {
@@ -166,11 +164,13 @@ public class CourseFormActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     YogaCourse course = response.body();
                     etDayOfWeek.setText(course.getDayOfWeek());
+                    etTimeOfCourse.setText(course.getTimeOfCourse());
                     etCapacity.setText(String.valueOf(course.getCapacity()));
                     etPricePerClass.setText(String.valueOf(course.getPricePerClass()));
                     etLocation.setText(course.getLocation());
 
                     selectedDayOfWeek = course.getDayOfWeek();
+                    selectedTimeOfCourse = course.getTimeOfCourse();
                     selectedClassTypes = course.getClassTypes() != null ? course.getClassTypes() : new ArrayList<>();
 
                     for (ClassType ct : selectedClassTypes) {
@@ -197,9 +197,17 @@ public class CourseFormActivity extends AppCompatActivity {
     }
 
     private void addCourse() {
+        selectedTimeOfCourse = etTimeOfCourse.getText().toString().trim(); // Lấy giá trị từ etTimeOfCourse
+
+        if (selectedTimeOfCourse.isEmpty()) {
+            Toast.makeText(this, "Please select time for the course", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         YogaCourse newCourse = new YogaCourse(
                 null,
                 selectedDayOfWeek,
+                selectedTimeOfCourse,
                 Integer.parseInt(etCapacity.getText().toString().trim()),
                 Double.parseDouble(etPricePerClass.getText().toString().trim()),
                 null,
@@ -227,6 +235,51 @@ public class CourseFormActivity extends AppCompatActivity {
         });
     }
 
+    private void updateCourse() {
+        selectedTimeOfCourse = etTimeOfCourse.getText().toString().trim(); // Lấy giá trị từ etTimeOfCourse
+
+        if (selectedTimeOfCourse.isEmpty()) {
+            Toast.makeText(this, "Please select time for the course", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        List<String> classTypeIds = new ArrayList<>();
+        for (ClassType classType : selectedClassTypes) {
+            if (classType.getId() != null) {
+                classTypeIds.add(classType.getId());
+            }
+        }
+
+        YogaCourse updatedCourse = new YogaCourse(
+                courseId,
+                etDayOfWeek.getText().toString().trim(),
+                selectedTimeOfCourse,
+                Integer.parseInt(etCapacity.getText().toString().trim()),
+                Double.parseDouble(etPricePerClass.getText().toString().trim()),
+                classTypeIds,
+                etLocation.getText().toString().trim()
+        );
+
+        ApiService apiService = RetrofitClient.getApiService();
+        apiService.updateCourse(courseId, updatedCourse).enqueue(new Callback<YogaCourse>() {
+            @Override
+            public void onResponse(Call<YogaCourse> call, Response<YogaCourse> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(CourseFormActivity.this, "Course updated successfully", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    handleError(response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<YogaCourse> call, Throwable t) {
+                Log.e("CourseFormActivity", "Error: " + t.getMessage());
+                Toast.makeText(CourseFormActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void addClass() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Class");
@@ -240,7 +293,21 @@ public class CourseFormActivity extends AppCompatActivity {
         final EditText inputDuration = viewInflated.findViewById(R.id.inputDuration);
         final EditText inputDate = viewInflated.findViewById(R.id.inputDate);
 
-        inputDate.setOnClickListener(v -> selectDate(inputDate));
+        if (selectedTimeOfCourse == null || !selectedTimeOfCourse.contains(" - ")) {
+            Toast.makeText(this, "Time of course is not set. Please set the course time first.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] timeRange = selectedTimeOfCourse.split(" - ");
+        String[] start = timeRange[0].split(":");
+        String[] end = timeRange[1].split(":");
+
+        int startHour = Integer.parseInt(start[0]);
+        int startMinute = Integer.parseInt(start[1]);
+        int endHour = Integer.parseInt(end[0]);
+        int endMinute = Integer.parseInt(end[1]);
+
+        inputDate.setOnClickListener(v -> selectDateTime(inputDate, startHour, startMinute, endHour, endMinute));
 
         builder.setPositiveButton("Add", (dialog, which) -> {
             dialog.dismiss();
@@ -260,40 +327,103 @@ public class CourseFormActivity extends AppCompatActivity {
         builder.show();
     }
 
+    private void selectDateTime(EditText inputDate, int startHour, int startMinute, int endHour, int endMinute) {
+        final Calendar calendar = Calendar.getInstance();
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            calendar.set(year, month, dayOfMonth);
+
+            // Kiểm tra xem ngày đã chọn có khớp với `selectedDayOfWeek` không
+            if (isValidDateForSelectedDayOfWeek(calendar)) {
+                // Mở TimePickerDialog với giới hạn giờ trong khoảng thời gian cho phép
+                TimePickerDialog timePickerDialog = new TimePickerDialog(this, (timeView, selectedHour, selectedMinute) -> {
+                    if ((selectedHour > startHour || (selectedHour == startHour && selectedMinute >= startMinute))
+                            && (selectedHour < endHour || (selectedHour == endHour && selectedMinute <= endMinute))) {
+                        calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+                        calendar.set(Calendar.MINUTE, selectedMinute);
+
+                        String selectedDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()).format(calendar.getTime());
+                        inputDate.setText(selectedDateTime);
+                    } else {
+                        Toast.makeText(this, "Please select a time within " + selectedTimeOfCourse, Toast.LENGTH_SHORT).show();
+                        selectDateTime(inputDate, startHour, startMinute, endHour, endMinute); // Mở lại DateTime picker nếu thời gian không hợp lệ
+                    }
+                }, startHour, startMinute, true);
+
+                timePickerDialog.show();
+            } else {
+                Toast.makeText(this, "Please select a valid " + selectedDayOfWeek, Toast.LENGTH_SHORT).show();
+                selectDateTime(inputDate, startHour, startMinute, endHour, endMinute); // Mở lại DatePicker nếu ngày không hợp lệ
+            }
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
+        datePickerDialog.show();
+    }
+
+
     private void saveClassTypes() {
         ApiService apiService = RetrofitClient.getApiService();
-        boolean hasNewClass = false;
+        boolean hasChanges = false;
 
         for (ClassType classType : selectedClassTypes) {
-            boolean isNewClass = classType.getId() == null ||
-                    originalClassTypes.stream().noneMatch(c -> c.getId().equals(classType.getId()));
+            ClassType originalClassType = originalClassTypes.stream()
+                    .filter(c -> c.getId() != null && c.getId().equals(classType.getId()))
+                    .findFirst()
+                    .orElse(null);
 
-            if (isNewClass) {
-                hasNewClass = true;
-                apiService.addClassTypeToCourse(courseId, classType).enqueue(new Callback<ClassType>() {
-                    @Override
-                    public void onResponse(Call<ClassType> call, Response<ClassType> response) {
-                        if (response.isSuccessful()) {
-                            Log.d("CourseFormActivity", "New ClassType saved: " + response.body());
-                        } else {
-                            handleError(response);
+            boolean isNewOrChanged = originalClassType == null || // Trường hợp class mới
+                    !classType.getTypeName().equals(originalClassType.getTypeName()) ||
+                    !classType.getDescription().equals(originalClassType.getDescription()) ||
+                    !classType.getTeacher().equals(originalClassType.getTeacher()) ||
+                    !classType.getDate().equals(originalClassType.getDate()) ||
+                    classType.getDuration() != originalClassType.getDuration();
+
+            if (isNewOrChanged) {
+                hasChanges = true;
+                if (originalClassType == null) {
+                    apiService.addClassTypeToCourse(courseId, classType).enqueue(new Callback<ClassType>() {
+                        @Override
+                        public void onResponse(Call<ClassType> call, Response<ClassType> response) {
+                            if (response.isSuccessful()) {
+                                Log.d("CourseFormActivity", "New ClassType saved: " + response.body());
+                            } else {
+                                handleError(response);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<ClassType> call, Throwable t) {
-                        Log.e("CourseFormActivity", "Error saving new ClassType: " + t.getMessage());
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<ClassType> call, Throwable t) {
+                            Log.e("CourseFormActivity", "Error saving new ClassType: " + t.getMessage());
+                        }
+                    });
+                } else {
+                    apiService.updateClassTypeInCourse(classType.getId(), classType).enqueue(new Callback<ClassType>() {
+                        @Override
+                        public void onResponse(Call<ClassType> call, Response<ClassType> response) {
+                            if (response.isSuccessful()) {
+                                Log.d("CourseFormActivity", "ClassType updated successfully: " + response.body());
+                            } else {
+                                handleError(response);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ClassType> call, Throwable t) {
+                            Log.e("CourseFormActivity", "Error updating ClassType: " + t.getMessage());
+                        }
+                    });
+                }
             }
         }
 
-        if (hasNewClass) {
-            Toast.makeText(this, "New classes saved to course", Toast.LENGTH_SHORT).show();
+        if (hasChanges) {
+            Toast.makeText(this, "Changes saved successfully", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "No new classes to save", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No changes to save", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void editClass(ClassType classType) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -314,7 +444,22 @@ public class CourseFormActivity extends AppCompatActivity {
         inputDuration.setText(String.valueOf(classType.getDuration()));
         inputDate.setText(classType.getDate());
 
-        inputDate.setOnClickListener(v -> selectDate(inputDate));
+        // Lấy giá trị giờ bắt đầu và kết thúc từ selectedTimeOfCourse
+        if (selectedTimeOfCourse != null && selectedTimeOfCourse.contains(" - ")) {
+            String[] timeRange = selectedTimeOfCourse.split(" - ");
+            String[] start = timeRange[0].split(":");
+            String[] end = timeRange[1].split(":");
+
+            int startHour = Integer.parseInt(start[0]);
+            int startMinute = Integer.parseInt(start[1]);
+            int endHour = Integer.parseInt(end[0]);
+            int endMinute = Integer.parseInt(end[1]);
+
+            // Truyền các giá trị startHour, startMinute, endHour, endMinute vào selectDateTime
+            inputDate.setOnClickListener(v -> selectDateTime(inputDate, startHour, startMinute, endHour, endMinute));
+        } else {
+            Toast.makeText(this, "Time of course is not set. Please set the course time first.", Toast.LENGTH_SHORT).show();
+        }
 
         builder.setPositiveButton("Save", (dialog, which) -> {
             dialog.dismiss();
@@ -348,6 +493,7 @@ public class CourseFormActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
+
 
 
     private void deleteClass(ClassType classType) {

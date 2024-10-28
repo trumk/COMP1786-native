@@ -13,6 +13,9 @@ public class YogaCourse implements Serializable {
     @SerializedName("dayOfWeek")
     private String dayOfWeek;
 
+    @SerializedName("timeOfCourse")
+    private String timeOfCourse;
+
     @SerializedName("capacity")
     private int capacity;
 
@@ -28,12 +31,16 @@ public class YogaCourse implements Serializable {
     @SerializedName("participants")
     private List<String> participants;
 
-    public YogaCourse() {
-    }
+    // Hàm khởi tạo mặc định
+    public YogaCourse() {}
 
-    public YogaCourse(String id, String dayOfWeek, int capacity, double pricePerClass, List<ClassType> classTypes, String location, List<String> participants) {
+    // Hàm khởi tạo đầy đủ (với danh sách ClassType)
+    public YogaCourse(String id, String dayOfWeek, String timeOfCourse, int capacity,
+                      double pricePerClass, List<ClassType> classTypes, String location,
+                      List<String> participants) {
         this.id = id;
         this.dayOfWeek = dayOfWeek;
+        this.timeOfCourse = timeOfCourse;
         this.capacity = capacity;
         this.pricePerClass = pricePerClass;
         this.classTypes = classTypes;
@@ -41,6 +48,21 @@ public class YogaCourse implements Serializable {
         this.participants = participants;
     }
 
+    // Hàm khởi tạo cho updateCourse (với danh sách ID của ClassType)
+    public YogaCourse(String id, String dayOfWeek, String timeOfCourse, int capacity,
+                      double pricePerClass, List<String> classTypeIds, String location) {
+        this.id = id;
+        this.dayOfWeek = dayOfWeek;
+        this.timeOfCourse = timeOfCourse;
+        this.capacity = capacity;
+        this.pricePerClass = pricePerClass;
+        this.location = location;
+
+        // Chuyển đổi danh sách ID thành đối tượng ClassType
+        this.classTypes = null; // Hoặc có thể xử lý theo yêu cầu khác, nếu cần
+    }
+
+    // Getters và setters cho các trường...
     public String getId() {
         return id;
     }
@@ -55,6 +77,14 @@ public class YogaCourse implements Serializable {
 
     public void setDayOfWeek(String dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
+    }
+
+    public String getTimeOfCourse() {
+        return timeOfCourse;
+    }
+
+    public void setTimeOfCourse(String timeOfCourse) {
+        this.timeOfCourse = timeOfCourse;
     }
 
     public int getCapacity() {
