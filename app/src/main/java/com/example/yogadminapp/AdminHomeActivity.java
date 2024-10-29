@@ -28,7 +28,6 @@ import retrofit2.Response;
 public class AdminHomeActivity extends AppCompatActivity {
 
     private Button btnManageCourses;
-    private Button btnManageClasses;
     private Button btnManageOrders;
     private TextView tvUserCount;
     private TextView tvClassCount;
@@ -42,7 +41,6 @@ public class AdminHomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_home);
 
         btnManageCourses = findViewById(R.id.btnManageCourses);
-        btnManageClasses = findViewById(R.id.btnManageClasses);
         btnManageOrders = findViewById(R.id.btnManageOrders);
         tvUserCount = findViewById(R.id.tvUserCount);
         tvClassCount = findViewById(R.id.tvClassCount);
@@ -70,10 +68,6 @@ public class AdminHomeActivity extends AppCompatActivity {
                 startActivity(intent);
             });
 
-        btnManageClasses.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminHomeActivity.this, ClassListActivity.class);
-            startActivity(intent);
-        });
 
         btnManageOrders.setOnClickListener(v -> {
             Intent intent = new Intent(AdminHomeActivity.this, OrderListActivity.class);
@@ -83,7 +77,7 @@ public class AdminHomeActivity extends AppCompatActivity {
         loadUserCount();
         loadClassCount();
         loadCourseCount();
-        loadOrderCount(); // Gọi hàm loadOrderCount
+        loadOrderCount();
     }
 
     private void loadUserCount() {

@@ -34,13 +34,12 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.YogAdminApp" />
 
         <activity
             android:name=".CourseListActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+            android:theme="@style/CustomThemeWithoutActionBar" />
 
         <activity
             android:name=".CourseFormActivity"
