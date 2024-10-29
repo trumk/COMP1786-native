@@ -21,7 +21,7 @@ public class ClassType implements Serializable {
     private String date;
 
     @SerializedName("duration")
-    private int duration; // Thêm trường duration
+    private int duration;
 
     @SerializedName("__v")
     private int version;
@@ -34,11 +34,6 @@ public class ClassType implements Serializable {
         this.teacher = teacher;
         this.date = date;
         this.duration = duration;
-    }
-
-    public ClassType(String id, String typeName) {
-        this.id = id;
-        this.typeName = typeName;
     }
 
     public String getId() {
@@ -105,5 +100,4 @@ public class ClassType implements Serializable {
                 "Date: " + date + "\n" +
                 "Duration: " + duration + " minutes";
     }
-
 }

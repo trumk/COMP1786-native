@@ -55,7 +55,6 @@ public class CourseListActivity extends AppCompatActivity {
         btnSearch = findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(v -> searchCourses());
 
-        // Setup Spinner for days of the week
         spinnerDayOfWeek = findViewById(R.id.spinnerDayOfWeek);
         setupDayOfWeekSpinner();
 
@@ -108,13 +107,11 @@ public class CourseListActivity extends AppCompatActivity {
         }
 
         if (isDaySelected) {
-            // Nếu ngày được chọn, gọi API tìm kiếm với từ khóa và ngày
             apiService.searchCourses(query.isEmpty() ? null : query, dayOfWeek).enqueue(new Callback<List<YogaCourse>>() {
                 @Override
                 public void onResponse(Call<List<YogaCourse>> call, Response<List<YogaCourse>> response) {
                     if (response.isSuccessful()) {
                         List<YogaCourse> courses = response.body();
-                        // Log kết quả tìm kiếm
                         Log.d("CourseListActivity", "Search results: " + (courses != null ? courses.size() : 0));
                         adapter = new CourseAdapter(courses, CourseListActivity.this);
                         recyclerView.setAdapter(adapter);
@@ -131,13 +128,11 @@ public class CourseListActivity extends AppCompatActivity {
                 }
             });
         } else {
-            // Nếu không có ngày cụ thể, chỉ tìm kiếm theo từ khóa
             apiService.searchCourses(query.isEmpty() ? null : query, null).enqueue(new Callback<List<YogaCourse>>() {
                 @Override
                 public void onResponse(Call<List<YogaCourse>> call, Response<List<YogaCourse>> response) {
                     if (response.isSuccessful()) {
                         List<YogaCourse> courses = response.body();
-                        // Log kết quả tìm kiếm
                         Log.d("CourseListActivity", "Search results: " + (courses != null ? courses.size() : 0));
                         adapter = new CourseAdapter(courses, CourseListActivity.this);
                         recyclerView.setAdapter(adapter);

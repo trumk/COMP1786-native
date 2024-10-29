@@ -236,7 +236,7 @@ public class CourseFormActivity extends AppCompatActivity {
     }
 
     private void updateCourse() {
-        selectedTimeOfCourse = etTimeOfCourse.getText().toString().trim(); // Lấy giá trị từ etTimeOfCourse
+        selectedTimeOfCourse = etTimeOfCourse.getText().toString().trim();
 
         if (selectedTimeOfCourse.isEmpty()) {
             Toast.makeText(this, "Please select time for the course", Toast.LENGTH_SHORT).show();
@@ -444,7 +444,6 @@ public class CourseFormActivity extends AppCompatActivity {
         inputDuration.setText(String.valueOf(classType.getDuration()));
         inputDate.setText(classType.getDate());
 
-        // Lấy giá trị giờ bắt đầu và kết thúc từ selectedTimeOfCourse
         if (selectedTimeOfCourse != null && selectedTimeOfCourse.contains(" - ")) {
             String[] timeRange = selectedTimeOfCourse.split(" - ");
             String[] start = timeRange[0].split(":");
@@ -455,7 +454,6 @@ public class CourseFormActivity extends AppCompatActivity {
             int endHour = Integer.parseInt(end[0]);
             int endMinute = Integer.parseInt(end[1]);
 
-            // Truyền các giá trị startHour, startMinute, endHour, endMinute vào selectDateTime
             inputDate.setOnClickListener(v -> selectDateTime(inputDate, startHour, startMinute, endHour, endMinute));
         } else {
             Toast.makeText(this, "Time of course is not set. Please set the course time first.", Toast.LENGTH_SHORT).show();

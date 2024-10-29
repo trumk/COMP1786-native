@@ -83,8 +83,6 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         }
     }
 
-
-
     private void deleteCourse(String courseId, int position) {
         ApiService apiService = RetrofitClient.getApiService();
         apiService.deleteCourse(courseId).enqueue(new Callback<Void>() {

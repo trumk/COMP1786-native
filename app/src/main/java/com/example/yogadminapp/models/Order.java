@@ -98,7 +98,6 @@ public class Order implements Serializable {
         }
     }
 
-    // Lớp UpdateOrderRequest bên trong Order
     public static class UpdateOrderRequest implements Serializable {
         private String orderId;
         private String status;
