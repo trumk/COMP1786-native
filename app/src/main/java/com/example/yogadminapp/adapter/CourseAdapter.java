@@ -42,26 +42,16 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
         YogaCourse course = courses.get(position);
 
-        // Hiển thị thông tin tên khóa học với số thứ tự
-        holder.tvNo.setText("Course " + (position + 1)); // position bắt đầu từ 0, cộng thêm 1 để bắt đầu từ 1
-
-        // Hiển thị thông tin địa điểm
+        holder.tvNo.setText(course.getDayOfWeek());
         holder.tvLocation.setText("Location: " + course.getLocation());
-
-        // Hiển thị thông tin ngày
         holder.tvCourseTime.setText("Day: " + course.getDayOfWeek());
-
-        // Hiển thị thông tin capacity
         holder.tvCapacity.setText("Capacity: " + course.getCapacity());
-
-        // Xử lý sự kiện khi nhấn nút Edit
         holder.btnEdit.setOnClickListener(v -> {
             Intent intent = new Intent(context, CourseFormActivity.class);
             intent.putExtra("courseId", course.getId());
             context.startActivity(intent);
         });
 
-        // Xử lý sự kiện khi nhấn nút Delete
         holder.btnDelete.setOnClickListener(v -> {
             new android.app.AlertDialog.Builder(context)
                     .setTitle("Confirm Delete")
@@ -84,7 +74,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
         public CourseViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvNo = itemView.findViewById(R.id.tvNo); // Đổi từ tvCourseName sang tvTeacher
+            tvNo = itemView.findViewById(R.id.tvNo);
             tvLocation = itemView.findViewById(R.id.tvLocation);
             tvCourseTime = itemView.findViewById(R.id.tvCourseTime);
             tvCapacity = itemView.findViewById(R.id.tvCapacity);
