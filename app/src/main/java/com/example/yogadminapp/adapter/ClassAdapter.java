@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.yogadminapp.R;
-import com.example.yogadminapp.models.ClassType;
+import com.example.yogadminapp.models.Class;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,19 +18,19 @@ import java.util.Locale;
 
 public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHolder> {
 
-    private final List<ClassType> classTypeList;
+    private final List<Class> classList;
     private final OnItemClickListener listener;
     private final SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
     private final SimpleDateFormat outputFormat = new SimpleDateFormat("EEEE, dd MMM yyyy - HH:mm", Locale.getDefault());
 
     public interface OnItemClickListener {
-        void onItemClick(ClassType classType);
-        void onEditClick(ClassType classType);
-        void onDeleteClick(ClassType classType);
+        void onItemClick(Class aClass);
+        void onEditClick(Class aClass);
+        void onDeleteClick(Class aClass);
     }
 
-    public ClassAdapter(List<ClassType> classTypeList, OnItemClickListener listener) {
-        this.classTypeList = classTypeList;
+    public ClassAdapter(List<Class> classList, OnItemClickListener listener) {
+        this.classList = classList;
         this.listener = listener;
     }
 
@@ -43,24 +43,24 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
 
     @Override
     public void onBindViewHolder(@NonNull ClassViewHolder holder, int position) {
-        ClassType classType = classTypeList.get(position);
-        holder.typeNameTextView.setText(classType.getTypeName());
-        holder.descriptionTextView.setText(classType.getDescription());
-        holder.teacherTextView.setText(classType.getTeacher());
+        Class aClass = classList.get(position);
+        holder.typeNameTextView.setText(aClass.getTypeName());
+        holder.descriptionTextView.setText(aClass.getDescription());
+        holder.teacherTextView.setText(aClass.getTeacher());
 
-        String formattedDate = formatDate(classType.getDate());
+        String formattedDate = formatDate(aClass.getDate());
         holder.dateTextView.setText(formattedDate);
 
-        holder.durationTextView.setText("Duration: " + classType.getDuration() + " minutes");
+        holder.durationTextView.setText("Duration: " + aClass.getDuration() + " minutes");
 
-        holder.itemView.setOnClickListener(v -> listener.onItemClick(classType));
-        holder.editButton.setOnClickListener(v -> listener.onEditClick(classType));
-        holder.deleteButton.setOnClickListener(v -> listener.onDeleteClick(classType));
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(aClass));
+        holder.editButton.setOnClickListener(v -> listener.onEditClick(aClass));
+        holder.deleteButton.setOnClickListener(v -> listener.onDeleteClick(aClass));
     }
 
     @Override
     public int getItemCount() {
-        return classTypeList.size();
+        return classList.size();
     }
 
     private String formatDate(String dateString) {
@@ -73,9 +73,9 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
         }
     }
 
-    public void setData(List<ClassType> newClassTypes) {
-        classTypeList.clear();
-        classTypeList.addAll(newClassTypes);
+    public void setData(List<Class> newClasses) {
+        classList.clear();
+        classList.addAll(newClasses);
         notifyDataSetChanged();
     }
 

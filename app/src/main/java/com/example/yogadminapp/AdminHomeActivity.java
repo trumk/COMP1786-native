@@ -3,7 +3,6 @@ package com.example.yogadminapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.yogadminapp.api.ApiService;
 import com.example.yogadminapp.api.RetrofitClient;
-import com.example.yogadminapp.models.ClassType;
+import com.example.yogadminapp.models.Class;
 import com.example.yogadminapp.models.Order;
 import com.example.yogadminapp.models.User;
 import com.example.yogadminapp.models.YogaCourse;
@@ -104,9 +103,9 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     private void loadClassCount() {
         ApiService apiService = RetrofitClient.getApiService();
-        apiService.getAllClassTypes().enqueue(new Callback<List<ClassType>>() {
+        apiService.getAllClassTypes().enqueue(new Callback<List<Class>>() {
             @Override
-            public void onResponse(@NonNull Call<List<ClassType>> call, @NonNull Response<List<ClassType>> response) {
+            public void onResponse(@NonNull Call<List<Class>> call, @NonNull Response<List<Class>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     int classCount = response.body().size();
                     tvClassCount.setText(String.valueOf(classCount));
@@ -117,7 +116,7 @@ public class AdminHomeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<ClassType>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<Class>> call, @NonNull Throwable t) {
                 Log.e("AdminHomeActivity", "Error: " + t.getMessage());
                 Toast.makeText(AdminHomeActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }

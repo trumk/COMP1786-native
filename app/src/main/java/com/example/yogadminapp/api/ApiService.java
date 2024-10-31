@@ -1,6 +1,6 @@
 package com.example.yogadminapp.api;
 
-import com.example.yogadminapp.models.ClassType;
+import com.example.yogadminapp.models.Class;
 import com.example.yogadminapp.models.Order;
 import com.example.yogadminapp.models.User;
 import com.example.yogadminapp.models.YogaCourse;
@@ -17,13 +17,13 @@ import retrofit2.http.Query;
 
 public interface ApiService {
     @GET("admin/courses/class")
-    Call<List<ClassType>> getAllClassTypes();
+    Call<List<Class>> getAllClassTypes();
 
     @POST("admin/courses/{courseId}/class")
-    Call<ClassType> addClassTypeToCourse(@Path("courseId") String courseId, @Body ClassType classType);
+    Call<Class> addClassTypeToCourse(@Path("courseId") String courseId, @Body Class aClass);
 
     @PUT("admin/courses/class/{id}")
-    Call<ClassType> updateClassTypeInCourse(@Path("id") String id, @Body ClassType classType);
+    Call<Class> updateClassTypeInCourse(@Path("id") String id, @Body Class aClass);
 
     @DELETE("admin/courses/{courseId}/class/{id}")
     Call<Void> removeClassTypeFromCourse(@Path("courseId") String courseId, @Path("id") String classTypeId);

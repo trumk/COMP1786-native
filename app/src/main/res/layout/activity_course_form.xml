@@ -55,6 +55,13 @@
                 android:padding="16dp"
                 android:layout_marginBottom="8dp"/>
 
+            <Spinner
+                android:id="@+id/spinnerTypeOfClass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"/>
+
+
             <EditText
                 android:id="@+id/etLocation"
                 android:layout_width="match_parent"

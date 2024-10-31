@@ -22,8 +22,11 @@ public class YogaCourse implements Serializable {
     @SerializedName("pricePerClass")
     private double pricePerClass;
 
-    @SerializedName("classType")
-    private List<ClassType> classTypes;
+    @SerializedName("class")
+    private List<Class> classes;
+
+    @SerializedName("typeOfClass")
+    private String typeOfClass;
 
     @SerializedName("location")
     private String location;
@@ -34,27 +37,17 @@ public class YogaCourse implements Serializable {
     public YogaCourse() {}
 
     public YogaCourse(String id, String dayOfWeek, String timeOfCourse, int capacity,
-                      double pricePerClass, List<ClassType> classTypes, String location,
-                      List<String> participants) {
+                      double pricePerClass, List<Class> classes, String typeOfClass,
+                      String location, List<String> participants) {
         this.id = id;
         this.dayOfWeek = dayOfWeek;
         this.timeOfCourse = timeOfCourse;
         this.capacity = capacity;
         this.pricePerClass = pricePerClass;
-        this.classTypes = classTypes;
+        this.classes = classes;
+        this.typeOfClass = typeOfClass;
         this.location = location;
         this.participants = participants;
-    }
-
-    public YogaCourse(String id, String dayOfWeek, String timeOfCourse, int capacity,
-                      double pricePerClass, List<String> classTypeIds, String location) {
-        this.id = id;
-        this.dayOfWeek = dayOfWeek;
-        this.timeOfCourse = timeOfCourse;
-        this.capacity = capacity;
-        this.pricePerClass = pricePerClass;
-        this.location = location;
-        this.classTypes = null;
     }
 
     public String getId() {
@@ -97,12 +90,20 @@ public class YogaCourse implements Serializable {
         this.pricePerClass = pricePerClass;
     }
 
-    public List<ClassType> getClassTypes() {
-        return classTypes;
+    public List<Class> getClasses() {
+        return classes;
     }
 
-    public void setClassTypes(List<ClassType> classTypes) {
-        this.classTypes = classTypes;
+    public void setClasses(List<Class> classes) {
+        this.classes = classes;
+    }
+
+    public String getTypeOfClass() {
+        return typeOfClass;
+    }
+
+    public void setTypeOfClass(String typeOfClass) {
+        this.typeOfClass = typeOfClass;
     }
 
     public String getLocation() {

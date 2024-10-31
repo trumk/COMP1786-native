@@ -14,7 +14,6 @@ import com.example.yogadminapp.CourseFormActivity;
 import com.example.yogadminapp.R;
 import com.example.yogadminapp.api.ApiService;
 import com.example.yogadminapp.api.RetrofitClient;
-import com.example.yogadminapp.models.ClassType;
 import com.example.yogadminapp.models.YogaCourse;
 import java.util.List;
 import retrofit2.Call;
@@ -42,7 +41,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
         YogaCourse course = courses.get(position);
 
-        holder.tvNo.setText(course.getDayOfWeek());
+        holder.tvNo.setText(course.getTypeOfClass());
         holder.tvLocation.setText("Location: " + course.getLocation());
         holder.tvCourseTime.setText("Day: " + course.getDayOfWeek());
         holder.tvCapacity.setText("Capacity: " + course.getCapacity());

@@ -3,7 +3,6 @@ package com.example.yogadminapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -14,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.yogadminapp.adapter.ClassAdapter;
 import com.example.yogadminapp.api.ApiService;
 import com.example.yogadminapp.api.RetrofitClient;
-import com.example.yogadminapp.models.ClassType;
+import com.example.yogadminapp.models.Class;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,14 +52,14 @@ public class ClassListActivity extends AppCompatActivity {
 
     private void loadClassTypes() {
         ApiService apiService = RetrofitClient.getApiService();
-        apiService.getAllClassTypes().enqueue(new Callback<List<ClassType>>() {
+        apiService.getAllClassTypes().enqueue(new Callback<List<Class>>() {
             @Override
-            public void onResponse(@NonNull Call<List<ClassType>> call, @NonNull Response<List<ClassType>> response) {
+            public void onResponse(@NonNull Call<List<Class>> call, @NonNull Response<List<Class>> response) {
                 if (response.isSuccessful()) {
-                    List<ClassType> classTypes = response.body();
-                    if (classTypes != null && !classTypes.isEmpty()) {
-                        Log.d("ClassListActivity", "Number of ClassTypes: " + classTypes.size());
-                        adapter = new ClassAdapter(classTypes, null);
+                    List<Class> aClasses = response.body();
+                    if (aClasses != null && !aClasses.isEmpty()) {
+                        Log.d("ClassListActivity", "Number of ClassTypes: " + aClasses.size());
+                        adapter = new ClassAdapter(aClasses, null);
                         recyclerView.setAdapter(adapter);
                     } else {
                         Log.e("ClassListActivity", "ClassTypes list is empty or null");
@@ -72,7 +71,7 @@ public class ClassListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<ClassType>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<Class>> call, @NonNull Throwable t) {
                 Log.e("ClassListActivity", "Error: " + t.getMessage());
                 Toast.makeText(ClassListActivity.this, "Error loading class types", Toast.LENGTH_SHORT).show();
             }

@@ -13,4 +13,10 @@
         <item>Cancelled</item>
     </string-array>
 
+    <string-array name="type_of_class_array">
+        <item>Family Yoga</item>
+        <item>Flow Yoga</item>
+        <item>Aerial Yoga</item>
+    </string-array>
+
 </resources>

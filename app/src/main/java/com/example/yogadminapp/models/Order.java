@@ -73,20 +73,20 @@ public class Order implements Serializable {
     }
 
     public static class OrderItem implements Serializable {
-        private ClassType classType;
+        private Class aClass;
         private YogaCourse yogaCourse;
 
-        public OrderItem(ClassType classType, YogaCourse yogaCourse) {
-            this.classType = classType;
+        public OrderItem(Class aClass, YogaCourse yogaCourse) {
+            this.aClass = aClass;
             this.yogaCourse = yogaCourse;
         }
 
-        public ClassType getClassType() {
-            return classType;
+        public Class getClassType() {
+            return aClass;
         }
 
-        public void setClassType(ClassType classType) {
-            this.classType = classType;
+        public void setClassType(Class aClass) {
+            this.aClass = aClass;
         }
 
         public YogaCourse getYogaCourse() {

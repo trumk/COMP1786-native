@@ -4,12 +4,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class ClassType implements Serializable {
+public class Class implements Serializable {
     @SerializedName("_id")
     private String id;
 
-    @SerializedName("typeName")
-    private String typeName;
+    @SerializedName("className")
+    private String className;
 
     @SerializedName("description")
     private String description;
@@ -26,10 +26,10 @@ public class ClassType implements Serializable {
     @SerializedName("__v")
     private int version;
 
-    public ClassType() {}
+    public Class() {}
 
-    public ClassType(String typeName, String description, String teacher, String date, int duration) {
-        this.typeName = typeName;
+    public Class(String className, String description, String teacher, String date, int duration) {
+        this.className = className;
         this.description = description;
         this.teacher = teacher;
         this.date = date;
@@ -45,11 +45,11 @@ public class ClassType implements Serializable {
     }
 
     public String getTypeName() {
-        return typeName;
+        return className;
     }
 
     public void setTypeName(String typeName) {
-        this.typeName = typeName;
+        this.className = className;
     }
 
     public String getDescription() {
@@ -94,7 +94,7 @@ public class ClassType implements Serializable {
 
     @Override
     public String toString() {
-        return "Class Type: " + typeName + "\n" +
+        return "Class Type: " + className + "\n" +
                 "Description: " + description + "\n" +
                 "Teacher: " + teacher + "\n" +
                 "Date: " + date + "\n" +

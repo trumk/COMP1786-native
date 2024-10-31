@@ -5,10 +5,10 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/inputTypeName"
+        android:id="@+id/inputClassName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Type Name"
+        android:hint="Class Name"
         android:minHeight="56dp"
         android:padding="12dp"
         android:layout_marginBottom="8dp" />
