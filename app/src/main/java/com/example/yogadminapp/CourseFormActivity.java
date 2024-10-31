@@ -176,8 +176,6 @@ public class CourseFormActivity extends AppCompatActivity {
                     for (ClassType ct : selectedClassTypes) {
                         if (ct.getId() == null || ct.getId().isEmpty()) {
                             Log.e("CourseFormActivity", "Error: Missing ID for ClassType: " + ct.getTypeName());
-                        } else {
-                            Log.d("CourseFormActivity", "Loaded ClassType with ID: " + ct.getId());
                         }
                     }
 
@@ -197,7 +195,7 @@ public class CourseFormActivity extends AppCompatActivity {
     }
 
     private void addCourse() {
-        selectedTimeOfCourse = etTimeOfCourse.getText().toString().trim(); // Lấy giá trị từ etTimeOfCourse
+        selectedTimeOfCourse = etTimeOfCourse.getText().toString().trim();
 
         if (selectedTimeOfCourse.isEmpty()) {
             Toast.makeText(this, "Please select time for the course", Toast.LENGTH_SHORT).show();
@@ -333,9 +331,7 @@ public class CourseFormActivity extends AppCompatActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             calendar.set(year, month, dayOfMonth);
 
-            // Kiểm tra xem ngày đã chọn có khớp với `selectedDayOfWeek` không
             if (isValidDateForSelectedDayOfWeek(calendar)) {
-                // Mở TimePickerDialog với giới hạn giờ trong khoảng thời gian cho phép
                 TimePickerDialog timePickerDialog = new TimePickerDialog(this, (timeView, selectedHour, selectedMinute) -> {
                     if ((selectedHour > startHour || (selectedHour == startHour && selectedMinute >= startMinute))
                             && (selectedHour < endHour || (selectedHour == endHour && selectedMinute <= endMinute))) {
@@ -346,21 +342,20 @@ public class CourseFormActivity extends AppCompatActivity {
                         inputDate.setText(selectedDateTime);
                     } else {
                         Toast.makeText(this, "Please select a time within " + selectedTimeOfCourse, Toast.LENGTH_SHORT).show();
-                        selectDateTime(inputDate, startHour, startMinute, endHour, endMinute); // Mở lại DateTime picker nếu thời gian không hợp lệ
+                        selectDateTime(inputDate, startHour, startMinute, endHour, endMinute);
                     }
                 }, startHour, startMinute, true);
 
                 timePickerDialog.show();
             } else {
                 Toast.makeText(this, "Please select a valid " + selectedDayOfWeek, Toast.LENGTH_SHORT).show();
-                selectDateTime(inputDate, startHour, startMinute, endHour, endMinute); // Mở lại DatePicker nếu ngày không hợp lệ
+                selectDateTime(inputDate, startHour, startMinute, endHour, endMinute);
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
-
 
     private void saveClassTypes() {
         ApiService apiService = RetrofitClient.getApiService();
@@ -372,7 +367,7 @@ public class CourseFormActivity extends AppCompatActivity {
                     .findFirst()
                     .orElse(null);
 
-            boolean isNewOrChanged = originalClassType == null || // Trường hợp class mới
+            boolean isNewOrChanged = originalClassType == null ||
                     !classType.getTypeName().equals(originalClassType.getTypeName()) ||
                     !classType.getDescription().equals(originalClassType.getDescription()) ||
                     !classType.getTeacher().equals(originalClassType.getTeacher()) ||
@@ -491,7 +486,6 @@ public class CourseFormActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
-
 
 
     private void deleteClass(ClassType classType) {

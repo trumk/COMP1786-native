@@ -60,7 +60,7 @@ public class ClassListActivity extends AppCompatActivity {
                     List<ClassType> classTypes = response.body();
                     if (classTypes != null && !classTypes.isEmpty()) {
                         Log.d("ClassListActivity", "Number of ClassTypes: " + classTypes.size());
-                        adapter = new ClassAdapter(classTypes, null); // No click listener provided
+                        adapter = new ClassAdapter(classTypes, null);
                         recyclerView.setAdapter(adapter);
                     } else {
                         Log.e("ClassListActivity", "ClassTypes list is empty or null");

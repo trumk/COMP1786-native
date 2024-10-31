@@ -19,9 +19,6 @@ public interface ApiService {
     @GET("admin/courses/class")
     Call<List<ClassType>> getAllClassTypes();
 
-    @GET("admin/courses/class/{id}")
-    Call<ClassType> getClassTypeById(@Path("id") String id);
-
     @POST("admin/courses/{courseId}/class")
     Call<ClassType> addClassTypeToCourse(@Path("courseId") String courseId, @Body ClassType classType);
 
@@ -29,13 +26,7 @@ public interface ApiService {
     Call<ClassType> updateClassTypeInCourse(@Path("id") String id, @Body ClassType classType);
 
     @DELETE("admin/courses/{courseId}/class/{id}")
-    Call<Void> removeClassTypeFromCourse(
-            @Path("courseId") String courseId,
-            @Path("id") String classTypeId
-    );
-
-    @DELETE("class/{id}")
-    Call<Void> deleteClassType(@Path("id") String id);
+    Call<Void> removeClassTypeFromCourse(@Path("courseId") String courseId, @Path("id") String classTypeId);
 
     @GET("auth/allUser")
     Call<List<User>> getAllUsers();

@@ -94,7 +94,7 @@ public class CourseListActivity extends AppCompatActivity {
 
     private void searchCourses() {
         String query = etSearch.getText().toString().trim();
-        String dayOfWeek = spinnerDayOfWeek.getSelectedItem().toString(); // Get selected day
+        String dayOfWeek = spinnerDayOfWeek.getSelectedItem().toString();
 
         Log.d("CourseListActivity", "Searching for: " + query + ", Day: " + dayOfWeek);
 
