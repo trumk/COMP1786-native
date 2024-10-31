@@ -44,7 +44,7 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
     @Override
     public void onBindViewHolder(@NonNull ClassViewHolder holder, int position) {
         Class aClass = classList.get(position);
-        holder.typeNameTextView.setText(aClass.getTypeName());
+        holder.typeNameTextView.setText(aClass.getClassName());
         holder.descriptionTextView.setText(aClass.getDescription());
         holder.teacherTextView.setText(aClass.getTeacher());
 

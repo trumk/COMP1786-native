@@ -64,7 +64,7 @@ public class CourseFormActivity extends AppCompatActivity {
         classAdapter = new ClassAdapter(selectedClasses, new ClassAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Class aClass) {
-                Toast.makeText(CourseFormActivity.this, "Clicked: " + aClass.getTypeName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CourseFormActivity.this, "Clicked: " + aClass.getClassName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -386,7 +386,7 @@ public class CourseFormActivity extends AppCompatActivity {
                     .orElse(null);
 
             boolean isNewOrChanged = originalClass == null ||
-                    !aClass.getTypeName().equals(originalClass.getTypeName()) ||
+                    !aClass.getClassName().equals(originalClass.getClassName()) ||
                     !aClass.getDescription().equals(originalClass.getDescription()) ||
                     !aClass.getTeacher().equals(originalClass.getTeacher()) ||
                     !aClass.getDate().equals(originalClass.getDate()) ||
@@ -445,13 +445,13 @@ public class CourseFormActivity extends AppCompatActivity {
         View viewInflated = getLayoutInflater().inflate(R.layout.dialog_add_class, null);
         builder.setView(viewInflated);
 
-        final EditText inputTypeName = viewInflated.findViewById(R.id.inputClassName);
+        final EditText inputClassName = viewInflated.findViewById(R.id.inputClassName);
         final EditText inputDescription = viewInflated.findViewById(R.id.inputDescription);
         final EditText inputTeacher = viewInflated.findViewById(R.id.inputTeacher);
         final EditText inputDuration = viewInflated.findViewById(R.id.inputDuration);
         final EditText inputDate = viewInflated.findViewById(R.id.inputDate);
 
-        inputTypeName.setText(aClass.getTypeName());
+        inputClassName.setText(aClass.getClassName());
         inputDescription.setText(aClass.getDescription());
         inputTeacher.setText(aClass.getTeacher());
         inputDuration.setText(String.valueOf(aClass.getDuration()));
@@ -474,7 +474,7 @@ public class CourseFormActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Save", (dialog, which) -> {
             dialog.dismiss();
-            aClass.setTypeName(inputTypeName.getText().toString());
+            aClass.setClassName(inputClassName.getText().toString());
             aClass.setDescription(inputDescription.getText().toString());
             aClass.setTeacher(inputTeacher.getText().toString());
             aClass.setDuration(Integer.parseInt(inputDuration.getText().toString()));
