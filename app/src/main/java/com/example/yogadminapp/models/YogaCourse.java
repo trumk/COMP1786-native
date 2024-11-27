@@ -34,8 +34,6 @@ public class YogaCourse implements Serializable {
     @SerializedName("participants")
     private List<String> participants;
 
-    public YogaCourse() {}
-
     public YogaCourse(String id, String dayOfWeek, String timeOfCourse, int capacity,
                       double pricePerClass, List<Class> classes, String typeOfClass,
                       String location, List<String> participants) {
